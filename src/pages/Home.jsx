@@ -147,6 +147,16 @@ export default function Home() {
         "General": "General"
     };
 
+    const dayTranslations = {
+        "Mon": "LUN",
+        "Tue": "MAR",
+        "Wed": "MIÉ",
+        "Thu": "JUE",
+        "Fri": "VIE",
+        "Sat": "SÁB",
+        "Sun": "DOM"
+    };
+
     return (
         <div className="mx-auto max-w-7xl p-4 sm:p-6 relative">
             {/* Share Success Modal */}
@@ -203,7 +213,7 @@ export default function Home() {
                 <div className="fixed inset-0 z-50 flex flex-col bg-zinc-950 animate-in slide-in-from-bottom-10 duration-200 lg:hidden">
                     <div className="flex justify-between items-center p-4 border-b border-zinc-800 bg-zinc-900">
                         <div>
-                            <h3 className="text-white font-teko text-xl">AÑADIR A {activeAddDay.day.toUpperCase()}</h3>
+                            <h3 className="text-white font-teko text-xl">AÑADIR A {dayTranslations[activeAddDay.day] || activeAddDay.day}</h3>
                             <span className="text-xs text-green-500 uppercase tracking-widest">
                                 {splitTranslations[activeAddDay.split] || activeAddDay.split}
                             </span>

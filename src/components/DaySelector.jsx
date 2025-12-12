@@ -1,13 +1,13 @@
 import { useState } from "react";
 
 const weekDays = [
-    { key: "mon", label: "Lunes" },
-    { key: "tue", label: "Martes" },
-    { key: "wed", label: "Miércoles" },
-    { key: "thu", label: "Jueves" },
-    { key: "fri", label: "Viernes" },
-    { key: "sat", label: "Sábado" },
-    { key: "sun", label: "Domingo" }
+    { key: "Mon", label: "Lunes" },
+    { key: "Tue", label: "Martes" },
+    { key: "Wed", label: "Miércoles" },
+    { key: "Thu", label: "Jueves" },
+    { key: "Fri", label: "Viernes" },
+    { key: "Sat", label: "Sábado" },
+    { key: "Sun", label: "Domingo" }
 ];
 
 export default function DaySelector({ onChange }) {

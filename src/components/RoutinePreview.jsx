@@ -18,6 +18,16 @@ const splitTranslations = {
     "General": "General"
 };
 
+const dayTranslations = {
+    "Mon": "LUN",
+    "Tue": "MAR",
+    "Wed": "MIÉ",
+    "Thu": "JUE",
+    "Fri": "VIE",
+    "Sat": "SÁB",
+    "Sun": "DOM"
+};
+
 const RoutinePreview = ({ selectedDays, routineSplits, routineExercises = {}, onDropExercise, onRemoveExercise, onAddManually, className }) => {
     const [errorDay, setErrorDay] = React.useState(null);
 
@@ -42,6 +52,7 @@ const RoutinePreview = ({ selectedDays, routineSplits, routineExercises = {}, on
                 const dayExercises = routineExercises[day] || [];
                 const splitType = routineSplits[index];
                 const displaySplit = splitTranslations[splitType] || splitType;
+                const displayDay = dayTranslations[day] || day;
                 const isError = errorDay === day;
 
                 return (
@@ -80,7 +91,7 @@ const RoutinePreview = ({ selectedDays, routineSplits, routineExercises = {}, on
                             <div className="flex justify-between items-center mb-1">
                                 <div className="flex items-center gap-3">
                                     <h2 className="text-white text-2xl font-teko tracking-wide uppercase">
-                                        {day}
+                                        {displayDay}
                                     </h2>
                                     {/* Mobile/Quick Add Button */}
                                     <button
