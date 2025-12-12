@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+@theme {
+  --font-teko: "Teko", sans-serif;
+  --font-inter: "Inter", sans-serif;
+  --font-ysabeau: "Ysabeau Office", sans-serif;
+}

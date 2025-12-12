@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Background: Zinc-950 -->
+  <rect width="100" height="100" fill="#09090b" rx="22" /> 
+  
+  <!-- H Shape -->
+  <!-- Centered Base Shape + Skew + Correction -->
+  <!-- Base Center X=50, Y=50. -->
+  <!-- SkewX(-10) shifts the center (y=50) to the left by approx 9px. We compensate with translate(9, 0). -->
+  <path fill="#22c55e" d="M25 20 L42 20 L42 42 L58 42 L58 20 L75 20 L75 80 L58 80 L58 58 L42 58 L42 80 L25 80 Z" transform="translate(9, 0) skewX(-10)" />
+</svg>
