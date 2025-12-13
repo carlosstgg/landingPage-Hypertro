@@ -306,7 +306,7 @@ export default function Home() {
                 </h1>
                 <p className="text-zinc-400 font-inter text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
                     Diseña tu microciclo de hipertrofia en segundos.
-                    <span className="block sm:inline text-green-500/80"> Sin registros. Sin pagos. Solo ganancias.</span>
+                    <span className="block sm:inline text-green-500/80"> Sin pagos. Solo ganancias.</span>
                 </p>
                 <div className="h-1 w-24 bg-green-500 mx-auto mt-8 rounded-full shadow-[0_0_15px_rgba(34,197,94,0.5)]"></div>
             </div>
