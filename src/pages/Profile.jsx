@@ -5,6 +5,8 @@ import { supabase } from "../supabaseClient";
 import { encodeRoutine } from "../utils/urlState";
 import RoutinePreview from "../components/RoutinePreview";
 
+import toast from 'react-hot-toast';
+
 export default function Profile() {
     const { user } = useAuth();
     const [routines, setRoutines] = useState([]);
@@ -27,14 +29,47 @@ export default function Profile() {
             setRoutines(data);
         } catch (error) {
             console.error('Error fetching routines:', error);
+            toast.error("Error al cargar rutinas.");
         } finally {
             setLoading(false);
         }
     };
 
-    const handleDelete = async (id) => {
-        if (!confirm("¿Seguro que quieres borrar esta rutina?")) return;
+    const handleDelete = (id) => {
+        toast.custom((t) => (
+            <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-zinc-900 shadow-xl rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5 border border-zinc-800`}>
+                <div className="flex-1 w-0 p-4">
+                    <div className="flex items-start">
+                        <div className="ml-3 flex-1">
+                            <p className="text-sm font-medium text-white">¿Borrar esta rutina?</p>
+                            <p className="mt-1 text-sm text-zinc-400">Esta acción no se puede deshacer.</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex border-l border-zinc-800">
+                    <button
+                        onClick={() => {
+                            toast.dismiss(t.id);
+                            executeDelete(id);
+                        }}
+                        className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-bold text-red-500 hover:bg-zinc-800 focus:outline-none"
+                    >
+                        BORRAR
+                    </button>
+                </div>
+                <div className="flex border-l border-zinc-800">
+                    <button
+                        onClick={() => toast.dismiss(t.id)}
+                        className="w-full border border-transparent rounded-none p-4 flex items-center justify-center text-sm font-medium text-zinc-400 hover:text-white hover:bg-zinc-800 focus:outline-none"
+                    >
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        ));
+    };
 
+    const executeDelete = async (id) => {
         try {
             const { error } = await supabase
                 .from('routines')
@@ -43,9 +78,10 @@ export default function Profile() {
 
             if (error) throw error;
             setRoutines(prev => prev.filter(r => r.id !== id));
+            toast.success("Rutina eliminada.");
         } catch (error) {
             console.error('Error deleting routine:', error);
-            alert("No se pudo borrar la rutina.");
+            toast.error("No se pudo borrar la rutina.");
         }
     };
 
@@ -54,7 +90,7 @@ export default function Profile() {
     return (
         <div className="max-w-7xl mx-auto p-6 min-h-screen">
             <h1 className="text-6xl font-bold font-teko text-white mb-2 uppercase">
-                TU <span className="text-green-500">LEGADO</span>
+                DESAFÍA TUS <span className="text-green-500">LÍMITES</span>
             </h1>
             <p className="text-zinc-400 font-inter mb-12">
                 Bienvenido, <span className="text-white font-bold">{user?.user_metadata?.full_name || user?.email?.split('@')[0]}</span>. Aquí están tus planes de batalla.

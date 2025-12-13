@@ -55,6 +55,9 @@ export default function Workout() {
     };
 
     const toggleExercise = (index) => {
+        // Haptic Feedback for mobile feel
+        if (navigator.vibrate) navigator.vibrate(50);
+
         setCompletedExercises(prev => ({
             ...prev,
             [index]: !prev[index]

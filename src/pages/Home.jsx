@@ -7,6 +7,7 @@ import { encodeRoutine, decodeRoutine } from "../utils/urlState";
 import exercises from "../data/exercises.json";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../supabaseClient";
+import toast from 'react-hot-toast';
 
 export default function Home() {
     const [daysSelected, setDaysSelected] = useState([]);
@@ -45,7 +46,7 @@ export default function Home() {
             setShowShareModal(true);
         }).catch(err => {
             console.error("Failed to copy", err);
-            alert("No se pudo copiar el enlace. Intenta manualmente.");
+            toast.error("No se pudo copiar el enlace. Intenta manualmente.");
         });
     };
 

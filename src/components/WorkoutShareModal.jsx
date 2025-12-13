@@ -10,8 +10,8 @@ export default function WorkoutShareModal({ day, duration, exerciseCount, onClos
         setGenerating(true);
 
         try {
-            // 1. Generate Image
-            const dataUrl = await toPng(cardRef.current, { cacheBust: true, pixelRatio: 2 });
+            // 1. Generate Image - High Quality (4x scaling) to ensure crisp text
+            const dataUrl = await toPng(cardRef.current, { cacheBust: true, pixelRatio: 4 });
             let shared = false;
 
             // 2. Try Native Sharing (Mobile)
