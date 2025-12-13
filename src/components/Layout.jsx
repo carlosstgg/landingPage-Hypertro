@@ -10,7 +10,7 @@ export default function Layout({ children }) {
                         CONSTRUYE TU LEGADO
                     </p>
                     <p className="text-zinc-600 font-inter text-sm mb-6">
-                        por <a href="https://www.instagram.com/gallegosgtzz/" target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-green-500 transition-colors cursor-pointer">Carlos Gallegos</a>
+                        por <a href="https://carlos-gallegos-portfolio.vercel.app" target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-green-500 transition-colors cursor-pointer">Carlos Gallegos</a>
                     </p>
 
                     <a href="https://buymeacoffee.com/carlosgallegos" target="_blank" rel="noopener noreferrer" className="nav-item group flex items-center gap-2 bg-yellow-500/10 border border-yellow-500/20 hover:bg-yellow-500 hover:text-black text-yellow-500 px-4 py-2 rounded-full transition-all duration-300">
