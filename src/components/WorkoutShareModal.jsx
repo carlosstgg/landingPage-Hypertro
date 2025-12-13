@@ -72,7 +72,7 @@ export default function WorkoutShareModal({ day, duration, exerciseCount, onClos
 
                     {/* Logo Area */}
                     <div className="z-10 mt-4">
-                        <span className="text-4xl text-white font-bold italic tracking-tighter">
+                        <span className="text-5xl text-white font-bold font-teko tracking-wide">
                             HYPER<span className="text-green-500">TRO</span>.APP
                         </span>
                     </div>
@@ -105,8 +105,8 @@ export default function WorkoutShareModal({ day, duration, exerciseCount, onClos
                         <p className="text-zinc-500 text-xs font-inter tracking-widest uppercase font-bold">
                             DESAFÍA TUS LÍMITES
                         </p>
-                        <p className="text-green-600/50 text-[10px] mt-1">
-                            hypertro.app
+                        <p className="text-green-500/80 text-[10px] mt-1 uppercase font-bold tracking-wider">
+                            HYPERTRO.APP
                         </p>
                     </div>
 
