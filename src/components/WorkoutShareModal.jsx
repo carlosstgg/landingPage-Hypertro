@@ -73,7 +73,7 @@ export default function WorkoutShareModal({ day, duration, exerciseCount, onClos
                     {/* Logo Area */}
                     <div className="z-10 mt-4">
                         <span className="text-5xl text-white font-bold font-teko tracking-wide">
-                            HYPER<span className="text-green-500">TRO</span>.APP
+                            HYPER<span className="text-green-500">TRO</span>
                         </span>
                     </div>
 
