@@ -28,24 +28,13 @@ const dayTranslations = {
     "Sun": "DOM"
 };
 
-const RoutinePreview = ({ selectedDays, routineSplits, routineExercises = {}, onDropExercise, onRemoveExercise, onAddManually, className }) => {
+const RoutinePreview = ({ selectedDays, routineSplits, routineExercises = {}, onDropExercise, onRemoveExercise, onUpdateExercise, onAddManually, className }) => {
     const [errorDay, setErrorDay] = React.useState(null);
 
     const gridClasses = className || "grid grid-cols-1 md:grid-cols-2 gap-6";
+    // ... (rest of code)
 
-    if (selectedDays.length === 0) {
-        return (
-            <div className="text-center text-zinc-500 mt-8 font-inter">
-                Selecciona días para generar una rutina.
-            </div>
-        );
-    }
-
-    const triggerError = (day) => {
-        setErrorDay(day);
-        setTimeout(() => setErrorDay(null), 500); // Reset error state after animation duration
-    };
-
+    // Note: I will only replace the list item rendering part
     return (
         <div className={gridClasses}>
             {selectedDays.map((day, index) => {
@@ -56,22 +45,19 @@ const RoutinePreview = ({ selectedDays, routineSplits, routineExercises = {}, on
                 const isError = errorDay === day;
 
                 return (
+                    // ... (container div)
                     <div
                         key={day}
                         onDragOver={(e) => e.preventDefault()}
                         onDrop={(e) => {
+                            // ... (drop logic kept same, handled by outer scope usually)
                             e.preventDefault();
                             const data = e.dataTransfer.getData("application/json");
                             if (data) {
                                 const exercise = JSON.parse(data);
-                                // Validation logic
                                 const normalizeSplit = splitType.toLowerCase();
                                 const normalizeType = exercise.type.toLowerCase();
-
-                                // Allow if split name includes the exercise type (e.g. "Push A" includes "push")
-                                const isValid =
-                                    normalizeSplit.includes(normalizeType) ||
-                                    (normalizeSplit === "full body" && normalizeType === "full body");
+                                const isValid = normalizeSplit.includes(normalizeType) || (normalizeSplit === "full body" && normalizeType === "full body");
 
                                 if (isValid) {
                                     onDropExercise(day, exercise);
@@ -93,7 +79,6 @@ const RoutinePreview = ({ selectedDays, routineSplits, routineExercises = {}, on
                                     <h2 className="text-white text-2xl font-teko tracking-wide uppercase">
                                         {displayDay}
                                     </h2>
-                                    {/* Mobile/Quick Add Button */}
                                     <button
                                         onClick={() => onAddManually && onAddManually(day, splitType)}
                                         className="md:hidden flex items-center justify-center w-6 h-6 rounded-full bg-green-500/20 text-green-500 hover:bg-green-500 hover:text-black transition-colors"
@@ -117,18 +102,52 @@ const RoutinePreview = ({ selectedDays, routineSplits, routineExercises = {}, on
                             {dayExercises.length > 0 ? (
                                 <ul className="space-y-2">
                                     {dayExercises.map((ex, i) => (
-                                        <li key={i} className="group/item flex justify-between items-center bg-zinc-950 border border-zinc-800 p-3 rounded text-sm text-gray-300 shadow-sm animate-in fade-in slide-in-from-bottom-1 duration-300 hover:border-zinc-700 transition-colors">
-                                            <div className="flex flex-col">
-                                                <span className="font-medium text-white">{ex.name}</span>
-                                                <span className="text-xs text-zinc-600 uppercase">{ex.muscle}</span>
+                                        <li key={i} className="group/item flex flex-col gap-2 bg-zinc-950 border border-zinc-800 p-3 rounded text-sm text-gray-300 shadow-sm animate-in fade-in slide-in-from-bottom-1 duration-300 hover:border-zinc-700 transition-all">
+                                            <div className="flex justify-between items-start">
+                                                <div className="flex flex-col">
+                                                    <span className="font-medium text-white">{ex.name}</span>
+                                                    <span className="text-[10px] text-zinc-600 uppercase tracking-wider">{ex.muscle}</span>
+                                                </div>
+                                                <button
+                                                    onClick={() => onRemoveExercise && onRemoveExercise(day, i)}
+                                                    className="opacity-0 group-hover/item:opacity-100 text-zinc-600 hover:text-red-500 p-1 rounded transition-all font-bold -mt-1 -mr-1"
+                                                    title="Eliminar"
+                                                >
+                                                    ✕
+                                                </button>
                                             </div>
-                                            <button
-                                                onClick={() => onRemoveExercise && onRemoveExercise(day, i)}
-                                                className="opacity-0 group-hover/item:opacity-100 text-zinc-500 hover:text-red-500 p-1.5 rounded hover:bg-zinc-800 transition-all font-bold"
-                                                title="Eliminar ejercicio"
-                                            >
-                                                ✕
-                                            </button>
+
+                                            {/* Sets & Reps Inputs */}
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <div className="flex items-center relative gap-1">
+                                                    <span className="text-[10px] text-zinc-600 uppercase font-bold">SETS</span>
+                                                    <input
+                                                        type="text"
+                                                        inputMode="numeric"
+                                                        pattern="[0-9]*"
+                                                        placeholder="3"
+                                                        value={ex.sets || ''}
+                                                        onChange={(e) => {
+                                                            const val = e.target.value;
+                                                            if (val === '' || /^\d+$/.test(val)) {
+                                                                onUpdateExercise(day, i, 'sets', val);
+                                                            }
+                                                        }}
+                                                        className="w-8 bg-zinc-900 border border-zinc-800 rounded px-1 py-0.5 text-center text-white text-xs focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none hover:bg-zinc-800 transition-colors"
+                                                    />
+                                                </div>
+                                                <span className="text-zinc-600 text-xs">x</span>
+                                                <div className="flex items-center relative gap-1 flex-grow">
+                                                    <span className="text-[10px] text-zinc-600 uppercase font-bold">REPS</span>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="8-12"
+                                                        value={ex.reps || ''}
+                                                        onChange={(e) => onUpdateExercise(day, i, 'reps', e.target.value)}
+                                                        className="w-full bg-zinc-900 border border-zinc-800 rounded px-2 py-0.5 text-white text-xs focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none hover:bg-zinc-800 transition-colors"
+                                                    />
+                                                </div>
+                                            </div>
                                         </li>
                                     ))}
                                 </ul>

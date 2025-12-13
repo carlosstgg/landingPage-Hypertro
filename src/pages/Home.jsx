@@ -5,6 +5,8 @@ import ExerciseList from "../components/ExerciseList";
 import { generateSplit, getSplitRequirements } from "../utils/routineLogic";
 import { encodeRoutine, decodeRoutine } from "../utils/urlState";
 import exercises from "../data/exercises.json";
+import { useAuth } from "../contexts/AuthContext";
+import { supabase } from "../supabaseClient";
 
 export default function Home() {
     const [daysSelected, setDaysSelected] = useState([]);
@@ -69,6 +71,22 @@ export default function Home() {
         });
     };
 
+    const handleUpdateExercise = (day, index, field, value) => {
+        setRoutineExercises((prev) => {
+            const currentDayExercises = [...(prev[day] || [])];
+            // Update specific field
+            currentDayExercises[index] = {
+                ...currentDayExercises[index],
+                [field]: value
+            };
+
+            return {
+                ...prev,
+                [day]: currentDayExercises
+            };
+        });
+    };
+
     const handleAutoFill = () => {
         const newRoutine = {};
 
@@ -116,6 +134,52 @@ export default function Home() {
         setRoutineExercises({});
         setShowClearConfirm(false);
     };
+
+    // --- Save Logic (Supabase) ---
+    const { user } = useAuth();
+    const [isSaving, setIsSaving] = useState(false);
+
+    const handleSaveRoutine = async () => {
+        if (!user) {
+            toast.error("Debes iniciar sesión para guardar rutinas.");
+            // Opcional: navigate('/auth');
+            return;
+        }
+
+        if (!hasExercises) {
+            toast.error("Añade ejercicios antes de guardar.");
+            return;
+        }
+
+        const name = prompt("Dale un nombre a tu rutina (ej. PPL Destructor):");
+        if (!name) return;
+
+        setIsSaving(true);
+        try {
+            const { error } = await supabase
+                .from('routines')
+                .insert([
+                    {
+                        user_id: user.id,
+                        name: name,
+                        structure: {
+                            daysSelected,
+                            routineSplits,
+                            routineExercises
+                        }
+                    }
+                ]);
+
+            if (error) throw error;
+            toast.success("¡Rutina guardada exitosamente en tu perfil!");
+        } catch (error) {
+            console.error('Error saving routine:', error);
+            toast.error("Hubo un error al guardar la rutina.");
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
 
     // Mobile Logic
     const handleAddManually = (day, split) => {
@@ -237,7 +301,7 @@ export default function Home() {
             {/* Hero Section */}
             <div className="text-center mb-16 mt-8 animate-in fade-in slide-in-from-top-4 duration-700">
                 <h1 className="text-7xl md:text-9xl font-bold font-teko text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-zinc-600 tracking-wide uppercase italic leading-[0.85] mb-4">
-                    CONSTRUYE TU <span className="text-green-500">LEGADO</span>
+                    DESAFÍA TUS <span className="text-green-500">LÍMITES</span>
                 </h1>
                 <p className="text-zinc-400 font-inter text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
                     Diseña tu microciclo de hipertrofia en segundos.
@@ -257,6 +321,23 @@ export default function Home() {
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" /></svg>
                         <span className="text-xs sm:text-base">LIMPIAR</span>
+                    </button>
+
+                    <button
+                        onClick={handleSaveRoutine}
+                        disabled={isSaving || !hasExercises}
+                        className={`text-white px-3 py-2 rounded-lg font-bold font-teko tracking-wide transition-colors flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 shadow-lg shadow-blue-900/20
+                            ${(isSaving || !hasExercises)
+                                ? "bg-zinc-700 cursor-not-allowed opacity-50"
+                                : "bg-blue-600 hover:bg-blue-500"}`}
+                        title="Guardar en Perfil"
+                    >
+                        {isSaving ? (
+                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                        )}
+                        <span className="text-xs sm:text-base">{isSaving ? 'GUARDANDO...' : 'GUARDAR'}</span>
                     </button>
 
                     <button
@@ -311,16 +392,17 @@ export default function Home() {
                                 routineExercises={routineExercises}
                                 onDropExercise={handleDrop}
                                 onRemoveExercise={handleRemove}
+                                onUpdateExercise={handleUpdateExercise}
                                 onAddManually={handleAddManually}
                             />
                         </div>
 
-                        <div className="mt-8 pt-4 border-t border-zinc-800 flex justify-between items-center bg-zinc-900/80 backdrop-blur-sm p-4 rounded-lg relative z-10">
+                        <div className="mt-8 pt-4 border-t border-zinc-800 flex flex-col sm:flex-row justify-between items-center bg-zinc-900/80 backdrop-blur-sm p-4 rounded-lg relative z-10 gap-2 sm:gap-0">
                             <div className="flex items-center gap-2">
                                 <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
                                 <span className="text-zinc-400 text-xs font-inter tracking-wider uppercase whitespace-nowrap">Creado con Hypertro App</span>
                             </div>
-                            <span className="text-white font-teko tracking-[0.2em] text-lg pr-2 whitespace-nowrap">HYPERTRO.APP</span>
+                            <span className="text-white font-teko tracking-[0.2em] text-lg sm:text-lg pr-2 whitespace-nowrap">HYPERTRO.APP</span>
                         </div>
                     </div>
                 </div>
