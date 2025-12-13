@@ -1,9 +1,16 @@
 import React, { useRef, useState } from 'react';
 import { toPng } from 'html-to-image';
 
-export default function WorkoutShareModal({ day, duration, exerciseCount, onClose }) {
+export default function WorkoutShareModal({ day, duration, exerciseCount, stats, onClose }) {
     const cardRef = useRef(null);
     const [generating, setGenerating] = useState(false);
+
+    // Calculate progress percentage
+    const progressPercent = stats?.neededXP === stats?.currentXP
+        ? 100
+        : Math.max(0, Math.min(100, ((stats?.currentXP - stats?.prevThreshold) / (stats?.neededXP - stats?.prevThreshold)) * 100)) || 0;
+
+    const gainedXP = exerciseCount * 10; // Simple XP logic for now
 
     const handleShare = async () => {
         if (cardRef.current === null) return;
@@ -24,7 +31,7 @@ export default function WorkoutShareModal({ day, duration, exerciseCount, onClos
                         await navigator.share({
                             files: [file],
                             title: 'Hypertro Workout',
-                            text: `Acabo de destruir mi entrenamiento de ${day} en Hypertro App. 🔥`,
+                            text: `He subido a Nivel ${stats?.level || 1} en Hypertro. 🚀`,
                         });
                         shared = true;
                     }
@@ -37,14 +44,9 @@ export default function WorkoutShareModal({ day, duration, exerciseCount, onClos
             // 3. Fallback: Download Image (if not shared)
             if (!shared) {
                 const link = document.createElement('a');
-                link.download = `hypertro-${day.replace(/\s+/g, '-').toLowerCase()}.png`;
+                link.download = `hypertro-stats-${day}.png`;
                 link.href = dataUrl;
                 link.click();
-                if (navigator.canShare) {
-                    // If they had share API but it failed (or files not supported), tell them we downloaded it instead.
-                    // Don't annoy desktop users who expect download.
-                    alert("Imagen guardada en tu galería. ¡Súbela manualmente!");
-                }
             }
         } catch (err) {
             console.error('Error generating image:', err);
@@ -57,62 +59,82 @@ export default function WorkoutShareModal({ day, duration, exerciseCount, onClos
     return (
         <div className="fixed inset-0 z-[60] bg-black/90 flex flex-col items-center justify-center p-4">
             <h2 className="text-white font-teko text-3xl mb-4 uppercase text-center animate-pulse">
-                ¡Misión Cumplida! 🏆
+                ¡Entrenamiento Completado! 🏆
             </h2>
 
             {/* SHARED CARD PREVIEW */}
             <div className="relative mb-6 transform scale-90 sm:scale-100 shadow-2xl">
                 <div
                     ref={cardRef}
-                    className="w-[320px] h-[568px] bg-zinc-950 flex flex-col items-center justify-between p-8 border-4 border-zinc-900 relative overflow-hidden"
+                    className="w-[340px] h-[600px] bg-zinc-950 flex flex-col items-center relative overflow-hidden text-center"
                 >
-                    {/* Background Accents */}
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
-                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-green-500/5 rounded-full blur-3xl -ml-16 -mb-16"></div>
+                    {/* Background & Patterns */}
+                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-30"></div>
+                    <div className="absolute top-0 w-full h-1/2 bg-gradient-to-b from-zinc-900 to-transparent"></div>
+                    <div className="absolute bottom-0 w-full h-1/2 bg-gradient-to-t from-green-900/20 to-transparent"></div>
 
-                    {/* Logo Area */}
-                    <div className="z-10 mt-4">
-                        <span className="text-5xl text-white font-bold font-teko tracking-wide">
-                            HYPER<span className="text-green-500">TRO</span>
-                        </span>
-                    </div>
+                    {/* Content Container */}
+                    <div className="z-10 w-full h-full flex flex-col justify-between p-6 py-8">
 
-                    {/* Main Stats */}
-                    <div className="z-10 flex flex-col items-center gap-2">
-                        <h3 className="text-zinc-400 font-inter uppercase text-sm tracking-[0.2em]">Día Completado</h3>
-                        <h1 className="text-green-500 font-teko text-8xl leading-none uppercase drop-shadow-[0_0_15px_rgba(34,197,94,0.5)]">
-                            {day}
-                        </h1>
-                        <div className="w-16 h-1 bg-zinc-800 rounded-full mt-2"></div>
-                    </div>
-
-                    {/* Metrics Grid */}
-                    <div className="z-10 grid grid-cols-2 gap-4 w-full">
-                        <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800 text-center">
-                            <span className="block text-zinc-500 text-xs font-bold uppercase mb-1">Tiempo</span>
-                            <span className="text-3xl text-white font-teko">{duration}</span>
-                            <span className="text-xs text-zinc-500 font-bold ml-1">MIN</span>
+                        {/* Header */}
+                        <div>
+                            <p className="text-zinc-500 font-teko text-xl tracking-widest uppercase mb-1">
+                                {stats?.username || "Usuario"}
+                            </p>
+                            <h1 className="text-5xl text-white font-teko uppercase leading-none">
+                                {day} <span className="text-green-500">COMPLETED</span>
+                            </h1>
                         </div>
-                        <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800 text-center">
-                            <span className="block text-zinc-500 text-xs font-bold uppercase mb-1">Volumen</span>
-                            <span className="text-3xl text-white font-teko">{exerciseCount}</span>
-                            <span className="text-xs text-zinc-500 font-bold ml-1">EJERCICIOS</span>
+
+                        {/* Rank Badge */}
+                        <div className="my-4">
+                            <div className="inline-block border border-green-500/30 bg-green-500/10 rounded-lg px-6 py-2 backdrop-blur-sm">
+                                <span className="block text-[10px] text-green-400 font-bold uppercase tracking-[0.2em] mb-1">Rango Actual</span>
+                                <span className="text-3xl text-white font-teko uppercase tracking-wide">
+                                    {stats?.rank?.name || "RECLUTA"}
+                                </span>
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Footer */}
-                    <div className="z-10 text-center mb-4">
-                        <p className="text-zinc-500 text-xs font-inter tracking-widest uppercase font-bold">
-                            DESAFÍA TUS LÍMITES
-                        </p>
-                        <p className="text-green-500/80 text-[10px] mt-1 uppercase font-bold tracking-wider">
-                            HYPERTRO.APP
-                        </p>
-                    </div>
+                        {/* Stats Grid */}
+                        <div className="grid grid-cols-2 gap-4 w-full mb-2">
+                            <div className="bg-zinc-900/50 border border-zinc-800 p-3 rounded-lg flex flex-col items-center justify-center">
+                                <span className="text-2xl text-white font-teko">🔥 {stats?.currentStreak || 0}</span>
+                                <span className="text-[9px] text-zinc-500 uppercase font-bold tracking-wider">Días Racha</span>
+                            </div>
+                            <div className="bg-zinc-900/50 border border-zinc-800 p-3 rounded-lg flex flex-col items-center justify-center">
+                                <span className="text-2xl text-green-400 font-teko">+{gainedXP} XP</span>
+                                <span className="text-[9px] text-zinc-500 uppercase font-bold tracking-wider">Ganados</span>
+                            </div>
+                        </div>
 
-                    {/* Watermark/Date */}
-                    <div className="absolute bottom-2 right-4 text-[9px] text-zinc-800 font-mono">
-                        {new Date().toLocaleDateString()}
+                        {/* Level & Progress */}
+                        <div className="w-full bg-zinc-900/80 border border-zinc-800 p-5 rounded-xl backdrop-blur-md">
+                            <div className="flex justify-between items-end mb-2">
+                                <span className="text-zinc-400 text-xs font-bold uppercase tracking-wider">Progreso</span>
+                                <span className="text-white font-teko text-4xl leading-none">NIVEL {stats?.level || 1}</span>
+                            </div>
+
+                            <div className="h-3 bg-black rounded-full overflow-hidden border border-zinc-700/50 relative">
+                                <div
+                                    className="h-full bg-gradient-to-r from-green-600 to-green-400 shadow-[0_0_10px_rgba(34,197,94,0.5)]"
+                                    style={{ width: `${progressPercent}%` }}
+                                ></div>
+                            </div>
+                            <p className="text-right text-[10px] text-zinc-500 mt-2 font-mono">
+                                {Math.round(progressPercent)}% HACIA EL SIGUIENTE RANGO
+                            </p>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="mt-6 flex flex-col items-center">
+                            <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center mb-2 border border-zinc-700">
+                                <span className="text-green-500 font-bold text-xs">H</span>
+                            </div>
+                            <p className="text-zinc-600 text-[9px] uppercase tracking-[0.3em] font-bold">
+                                HYPERTRO.APP
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

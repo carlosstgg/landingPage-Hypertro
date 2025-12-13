@@ -21,6 +21,7 @@ export default function Workout() {
     // Share Modal State
     const [showShareModal, setShowShareModal] = useState(false);
     const [workoutStats, setWorkoutStats] = useState(null);
+    const [userStats, setUserStats] = useState(null); // For rich share card
 
     useEffect(() => {
         if (!user) {
@@ -73,8 +74,47 @@ export default function Workout() {
 
     const fetchHistory = async (day) => {
         try {
-            // Fetch last log for this routine_day
+            // Fetch LAST 10 logs to find recent history for these exercises
             const { data, error } = await supabase
+                .from('workout_logs')
+                .select('exercises, date')
+                .eq('user_id', user.id)
+                .order('date', { ascending: false })
+                .limit(10); // Look back 10 workouts
+
+            if (error) throw error;
+
+            if (data && data.length > 0) {
+                const historyMap = {};
+                const currentExercises = routine.structure.routineExercises[day] || [];
+
+                currentExercises.forEach((currentEx, index) => {
+                    // Find the most recent log that contains this exercise
+                    const lastLog = data.find(log => {
+                        const logExercises = log.exercises || {};
+                        // Check if we can find by exact name in the log's values
+                        // The structure is weird: log.exercises is { "0": [...sets], "1": ... } OR { "Exercise Name": ... } ?
+                        // Let's assume the previous structure we built: it relies on Order/Index? 
+                        // Actually, in `finishWorkout`, we save it as `exerciseLogs` which is { index: [...] }.
+                        // This is fragile. We need to save Exercise Name in the log to be robust.
+                        // BUT, for now, let's rely on the Routine ID similarity or just check if the routine_day matches.
+                        // If we are strictly checking `routine_day === day`, then Index matching is "okay" for now.
+                        return true;
+                    });
+
+                    // REVISION: We are saving logs with `exercises` as the state: { "0": [], "1": [] }.
+                    // We don't have the names in the DB JSON unless we put them there.
+                    // Improving `finishWorkout` to save Names would be better for v2.
+                    // For now, let's stick to the `routine_day` filter we had, but maybe fetch a bit more history if needed.
+                    // Actually, let's stick to the single last log of THIS routine_day for simplicity/consistency.
+                });
+
+                // Let's revert to the index-based matching for this specific routine_day for now, 
+                // but improve the display to calculate a "Best" or just "Last".
+            }
+
+            // Fetch last log specifically for this routine Day
+            const { data: specificData } = await supabase
                 .from('workout_logs')
                 .select('exercises')
                 .eq('user_id', user.id)
@@ -83,13 +123,10 @@ export default function Workout() {
                 .limit(1)
                 .maybeSingle();
 
-            if (error) console.error("Error fetching history:", error);
-
-            if (data && data.exercises) {
-                // Map the exercises from the last log to the current structure
-                // Assuming Index consistency for now (Phase 1 MVP)
-                setHistoryLogs(data.exercises);
+            if (specificData?.exercises) {
+                setHistoryLogs(specificData.exercises);
             }
+
         } catch (err) {
             console.error(err);
         }
@@ -177,7 +214,7 @@ export default function Workout() {
 
         try {
             // 1. Create Workout Log
-            const { data: logData, error: logError } = await supabase
+            const { error: logError } = await supabase
                 .from('workout_logs')
                 .insert([{
                     user_id: user.id,
@@ -200,10 +237,69 @@ export default function Workout() {
             // Let's do a simple update for now to avoid SQL complexity unless needed.
 
             // Simple update approach:
-            /* 
-            const { data: profile } = await supabase.from('profiles').select('current_streak').eq('id', user.id).single();
-            await supabase.from('profiles').update({ current_streak: (profile?.current_streak || 0) + 1 }).eq('id', user.id);
-            */
+
+
+            // 3. FETCH UPDATED STATS FOR SHARE CARD
+            // We need to recalculate them to show the *new* level/rank
+            const { data: allLogs } = await supabase
+                .from('workout_logs')
+                .select('date, exercises')
+                .eq('user_id', user.id);
+
+            // Ranks Definition (Copy from Profile - centralized in utils would be better but keeping simple)
+            const RANKS = [
+                { threshold: 0, name: "RECLUTA", color: "text-zinc-500" },
+                { threshold: 30, name: "CONSTANTE", color: "text-green-500" },
+                { threshold: 90, name: "DISCIPLINADO", color: "text-blue-500" },
+                { threshold: 180, name: "GYMRAT", color: "text-purple-500" },
+                { threshold: 365, name: "GYMBOSS", color: "text-yellow-500" },
+                { threshold: 730, name: "TITÁN", color: "text-orange-500" },
+                { threshold: 1000, name: "DIOS GRIEGO", color: "text-red-500" }
+            ];
+
+            const logs = allLogs || [];
+            const uniqueDays = new Set(logs.map(log => new Date(log.date).toISOString().split('T')[0])).size;
+            const rank = [...RANKS].reverse().find(r => uniqueDays >= r.threshold) || RANKS[0];
+            const currentRankIndex = RANKS.findIndex(r => r.name === rank.name);
+            const nextRank = RANKS[currentRankIndex + 1];
+            const neededXP = nextRank ? nextRank.threshold : uniqueDays * 1.5;
+            const prevThreshold = rank.threshold;
+            const level = Math.floor(uniqueDays / 7) + 1;
+
+            // Streak Calculation
+            const sortedLogs = [...logs].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const uniqueLogDates = [...new Set(sortedLogs.map(l => new Date(l.date).toISOString().split('T')[0]))];
+            let currentStreak = 0;
+            if (uniqueLogDates.length > 0) {
+                currentStreak = 1;
+                const today = new Date();
+                const lastWorkoutDate = new Date(uniqueLogDates[0]);
+                const gapDays = (today - lastWorkoutDate) / (1000 * 60 * 60 * 24);
+
+                if (gapDays <= 4) {
+                    for (let i = 0; i < uniqueLogDates.length - 1; i++) {
+                        const current = new Date(uniqueLogDates[i]);
+                        const prev = new Date(uniqueLogDates[i + 1]);
+                        const diffTime = Math.abs(current - prev);
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        if (diffDays <= 4) currentStreak++;
+                        else break;
+                    }
+                } else {
+                    currentStreak = 0;
+                }
+            }
+
+            const calculatedStats = {
+                level,
+                currentXP: uniqueDays,
+                neededXP,
+                prevThreshold,
+                rank,
+                currentStreak,
+                username: user.email?.split('@')[0] // Fallback username
+            };
+            setUserStats(calculatedStats);
 
             // INSTEAD OF NAVIGATING, SHOW MODAL
             // Find the split name (e.g., "Push", "Legs") for the active day
@@ -232,40 +328,72 @@ export default function Workout() {
     // --- DAY SELECTION VIEW ---
     if (!activeDay) {
         return (
-            <div className="min-h-screen bg-zinc-950 p-6 flex flex-col items-center justify-center">
+            <div className="min-h-screen bg-black p-6 flex flex-col items-center justify-center relative overflow-hidden">
+                {/* Background Noise/Gradient */}
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none"></div>
+                <div className="absolute top-0 right-0 w-96 h-96 bg-green-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+                {/* Back Button - Absolute Positioned */}
                 <button
                     onClick={() => navigate('/profile')}
-                    className="absolute top-4 left-4 text-zinc-500 hover:text-white"
+                    className="absolute top-8 left-8 z-50 text-zinc-500 hover:text-white flex items-center gap-2 transition-colors uppercase font-bold text-xs tracking-widest group"
                 >
-                    ← Volver
+                    <div className="w-8 h-8 rounded-full border border-zinc-800 bg-zinc-900/50 flex items-center justify-center group-hover:border-zinc-600 group-hover:bg-zinc-800 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                        </svg>
+                    </div>
+                    <span>Volver al Perfil</span>
                 </button>
-                <h1 className="text-4xl md:text-6xl font-teko text-white mb-2 uppercase text-center">
-                    {routine.name}
-                </h1>
-                <p className="text-zinc-400 font-inter mb-10 text-center">¿Qué toca reventar hoy?</p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl">
-                    {routine.structure.daysSelected.map((day, idx) => {
-                        const splitName = routine.structure.routineSplits[idx];
-                        const exerciseCount = (routine.structure.routineExercises[day] || []).length;
+                <div className="relative z-10 w-full max-w-2xl">
+                    <div className="text-center mb-12">
+                        <h1 className="text-5xl md:text-7xl font-teko text-white uppercase leading-none tracking-wide text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-500">
+                            {routine.name}
+                        </h1>
+                        <p className="text-green-500 font-teko text-xl md:text-2xl uppercase tracking-widest mt-2">
+                            Selecciona tu batalla de hoy
+                        </p>
+                    </div>
 
-                        return (
-                            <button
-                                key={day}
-                                onClick={() => handleStartDay(day)}
-                                className="group bg-zinc-900 border border-zinc-800 hover:border-green-500 p-6 rounded-xl text-left transition-all hover:bg-zinc-800 relative overflow-hidden"
-                            >
-                                <div className="relative z-10">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <span className="text-zinc-500 font-bold uppercase text-xs tracking-wider">{day}</span>
-                                        <span className="text-green-500 font-teko text-xl">{exerciseCount} Ejercicios</span>
+                    <div className="grid grid-cols-1 gap-4">
+                        {routine.structure.daysSelected.map((day, idx) => {
+                            const splitName = routine.structure.routineSplits[idx];
+                            const exerciseCount = (routine.structure.routineExercises[day] || []).length;
+
+                            return (
+                                <button
+                                    key={day}
+                                    onClick={() => handleStartDay(day)}
+                                    className="group relative w-full bg-zinc-900/50 border border-zinc-800 hover:border-green-500 p-6 rounded-xl text-left transition-all duration-300 hover:bg-zinc-900 overflow-hidden"
+                                >
+                                    <div className="absolute inset-0 bg-gradient-to-r from-green-500/0 via-green-500/0 to-green-500/0 group-hover:to-green-500/5 transition-all duration-500"></div>
+
+                                    <div className="relative z-10 flex justify-between items-center">
+                                        <div>
+                                            <div className="flex items-center gap-3 mb-1">
+                                                <span className="bg-zinc-800 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider group-hover:bg-green-500 group-hover:text-black transition-colors">
+                                                    {day}
+                                                </span>
+                                                <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">
+                                                    {exerciseCount} Ejercicios
+                                                </span>
+                                            </div>
+                                            <h3 className="text-4xl text-white font-teko uppercase leading-none group-hover:text-green-400 transition-colors">
+                                                {splitName}
+                                            </h3>
+                                        </div>
+
+                                        <div className="w-10 h-10 rounded-full border border-zinc-700 flex items-center justify-center group-hover:border-green-500 group-hover:bg-green-500/10 transition-all">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-zinc-500 group-hover:text-green-500">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 0 1 0 1.971l-11.54 6.347a1.125 1.125 0 0 1-1.667-.985V5.653Z" />
+                                            </svg>
+                                        </div>
                                     </div>
-                                    <h3 className="text-3xl text-white font-teko uppercase">{splitName}</h3>
-                                </div>
-                                <div className="absolute inset-0 bg-gradient-to-r from-green-500/0 via-green-500/0 to-green-500/5 group-hover:to-green-500/10 transition-all"></div>
-                            </button>
-                        );
-                    })}
+                                </button>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
         );
@@ -273,96 +401,127 @@ export default function Workout() {
 
     // --- ACTIVE WORKOUT VIEW ---
     const dayExercises = routine.structure.routineExercises[activeDay] || [];
-    const trainingTime = Math.round((new Date() - startTime) / 60000); // This won't update in real-time without a timer effect, but good enough for start.
 
     return (
-        <div className="min-h-screen bg-black pb-20">
-            {/* Header */}
-            <div className="sticky top-0 z-50 bg-black/90 backdrop-blur-md border-b border-zinc-900 p-4 flex justify-between items-center">
-                <div>
-                    <h2 className="text-white font-teko text-3xl leading-none uppercase">{activeDay}</h2>
-                    <p className="text-green-500 text-xs font-inter uppercase tracking-widest">En Progreso</p>
+        <div className="min-h-screen bg-black pb-32">
+            {/* Minimal Header */}
+            <div className="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-zinc-900 px-4 py-3 flex justify-between items-center">
+                <div className="flex items-baseline gap-2">
+                    <h2 className="text-white font-teko text-3xl uppercase leading-none text-green-500">{activeDay}</h2>
                 </div>
                 <button
                     onClick={() => setActiveDay(null)}
-                    className="text-zinc-500 hover:text-white text-sm"
+                    className="text-zinc-600 hover:text-white text-xs font-bold uppercase tracking-widest border border-zinc-800 px-3 py-1.5 rounded bg-zinc-900/50"
                 >
                     Cancelar
                 </button>
             </div>
 
             {/* Exercise List */}
-            <div className="p-4 space-y-4 max-w-3xl mx-auto mt-2 pb-32">
+            <div className="p-4 space-y-6 max-w-3xl mx-auto mt-2">
                 {dayExercises.length === 0 ? (
-                    <p className="text-zinc-500 text-center py-10">Día de descanso (o sin ejercicios).</p>
+                    <p className="text-zinc-500 text-center py-20 font-inter">Día de descanso.</p>
                 ) : (
                     dayExercises.map((ex, exIdx) => {
-                        // Determine if exercise is fully done (visual flair)
+                        // Determine if exercise is fully done
                         const sets = exerciseLogs[exIdx] || [];
                         const allDone = sets.length > 0 && sets.every(s => s.completed);
 
                         return (
-                            <div key={exIdx} className={`rounded-2xl border transition-all duration-300 overflow-hidden ${allDone ? 'border-green-500/30 bg-green-900/5' : 'border-zinc-800 bg-zinc-900'}`}>
-                                {/* Header */}
-                                <div className="bg-zinc-950/50 p-4 border-b border-zinc-800/50 flex justify-between items-center">
-                                    <h3 className={`font-teko text-2xl uppercase ${allDone ? 'text-green-500' : 'text-white'}`}>
+                            <div key={exIdx} className={`transition-all duration-500 ${allDone ? 'opacity-50 grayscale-[0.5]' : ''}`}>
+                                {/* Exercise Header */}
+                                <div className="mb-3 px-1">
+                                    <h3 className="font-teko text-3xl text-white uppercase leading-none tracking-wide">
                                         {ex.name}
                                     </h3>
-                                    <span className="text-xs text-zinc-500 font-inter font-bold tracking-wider">
-                                        {sets.length} SETS
-                                    </span>
+                                    {/* History / Previous Performance */}
+                                    {historyLogs[exIdx] && (
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">
+                                                Anterior
+                                            </span>
+                                            <div className="flex gap-2 overflow-x-auto no-scrollbar">
+                                                {historyLogs[exIdx].map((hSet, hIdx) => {
+                                                    if (!hSet.completed) return null;
+                                                    return (
+                                                        <span key={hIdx} className="text-[10px] text-zinc-400 font-inter whitespace-nowrap">
+                                                            {hSet.weight}kg <span className="text-zinc-600">x</span> {hSet.reps}
+                                                        </span>
+                                                    )
+                                                })}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
-                                {/* Sets List */}
-                                <div className="p-2 space-y-1">
-                                    {/* Labels Header */}
-                                    <div className="grid grid-cols-[0.5fr_1fr_1fr_0.5fr] gap-2 px-2 py-1 text-[10px] items-center text-center text-zinc-600 font-bold uppercase tracking-wider">
+                                {/* Sets Container */}
+                                <div className="flex flex-col gap-2">
+                                    {/* Column Labels */}
+                                    <div className="grid grid-cols-[3rem_1fr_1fr_3rem] gap-3 px-3 text-zinc-600 text-[10px] font-bold uppercase tracking-widest text-center">
                                         <span>Set</span>
                                         <span>KG</span>
                                         <span>Reps</span>
-                                        <span>Hecho</span>
+                                        <span>Check</span>
                                     </div>
 
                                     {sets.map((setLog, setIdx) => {
                                         const isSetDone = setLog.completed;
                                         return (
-                                            <div key={setIdx} className={`grid grid-cols-[0.5fr_1fr_1fr_0.5fr] gap-2 items-center p-2 rounded-lg transition-colors ${isSetDone ? 'bg-green-500/10' : 'bg-black/20'}`}>
+                                            <div
+                                                key={setIdx}
+                                                onClick={(e) => {
+                                                    // Allow clicking anywhere on the row to focus inputs if not done, 
+                                                    // but primarily this is for visual structure.
+                                                }}
+                                                className={`grid grid-cols-[3rem_1fr_1fr_3rem] gap-3 items-center p-3 rounded-xl border transition-all duration-200 
+                                                    ${isSetDone
+                                                        ? 'bg-green-900/10 border-green-900/30'
+                                                        : 'bg-zinc-900/40 border-zinc-800'
+                                                    }
+                                                `}
+                                            >
                                                 {/* Set Number */}
                                                 <div className="flex justify-center">
-                                                    <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center text-xs text-zinc-400 font-bold">
+                                                    <span className={`font-teko text-xl ${isSetDone ? 'text-green-600' : 'text-zinc-500'}`}>
                                                         {setIdx + 1}
-                                                    </div>
+                                                    </span>
                                                 </div>
 
                                                 {/* Weight Input */}
-                                                <div className="relative">
+                                                <div className="h-12 bg-black/30 rounded-lg relative overflow-hidden group-focus-within:ring-1 ring-green-500/50">
                                                     <input
                                                         type="number"
-                                                        placeholder={isSetDone ? "" : (historyLogs[exIdx]?.[setIdx]?.weight || "0")}
+                                                        placeholder={isSetDone ? "" : (historyLogs[exIdx]?.[setIdx]?.weight || "-")}
                                                         value={setLog.weight}
                                                         onChange={(e) => handleSetChange(exIdx, setIdx, 'weight', e.target.value)}
                                                         disabled={isSetDone}
-                                                        className={`w-full bg-black/40 border ${isSetDone ? 'border-transparent text-green-500' : 'border-zinc-800 text-white focus:border-green-500'} rounded p-2 text-center font-teko text-xl focus:outline-none transition-colors`}
+                                                        className={`w-full h-full bg-transparent text-center font-teko text-2xl focus:outline-none placeholder:text-zinc-700/50 ${isSetDone ? 'text-green-500' : 'text-white'}`}
                                                     />
                                                 </div>
 
                                                 {/* Reps Input */}
-                                                <div className="relative">
+                                                <div className="h-12 bg-black/30 rounded-lg relative overflow-hidden">
                                                     <input
                                                         type="number"
-                                                        placeholder={isSetDone ? "" : (historyLogs[exIdx]?.[setIdx]?.reps || "0")}
+                                                        placeholder={isSetDone ? "" : (historyLogs[exIdx]?.[setIdx]?.reps || "-")}
                                                         value={setLog.reps}
                                                         onChange={(e) => handleSetChange(exIdx, setIdx, 'reps', e.target.value)}
                                                         disabled={isSetDone}
-                                                        className={`w-full bg-black/40 border ${isSetDone ? 'border-transparent text-green-500' : 'border-zinc-800 text-white focus:border-green-500'} rounded p-2 text-center font-teko text-xl focus:outline-none transition-colors`}
+                                                        className={`w-full h-full bg-transparent text-center font-teko text-2xl focus:outline-none placeholder:text-zinc-700/50 ${isSetDone ? 'text-green-500' : 'text-white'}`}
                                                     />
                                                 </div>
 
                                                 {/* Check Button */}
-                                                <div className="flex justify-center">
+                                                <div className="flex justify-center h-12">
                                                     <button
-                                                        onClick={() => toggleSetComplete(exIdx, setIdx)}
-                                                        className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${isSetDone ? 'bg-green-500 text-black shadow-[0_0_10px_rgba(34,197,94,0.4)]' : 'bg-zinc-800 text-zinc-600 hover:bg-zinc-700 hover:text-zinc-300'}`}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            toggleSetComplete(exIdx, setIdx);
+                                                        }}
+                                                        className={`w-12 h-full rounded-lg flex items-center justify-center transition-all active:scale-95 ${isSetDone
+                                                            ? 'bg-green-500 text-black shadow-[0_0_15px_rgba(34,197,94,0.4)]'
+                                                            : 'bg-zinc-800 text-zinc-600 hover:bg-zinc-700 hover:text-zinc-400'
+                                                            }`}
                                                     >
                                                         {isSetDone ? (
                                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
@@ -386,24 +545,28 @@ export default function Workout() {
             </div>
 
             {/* Finish Button */}
-            <div className="fixed bottom-0 left-0 w-full p-4 bg-black border-t border-zinc-900 z-50 shadow-2xl">
+            {/* Finish Button */}
+            <div className="p-4 mt-8 pb-12 w-full z-40">
                 <button
                     onClick={finishWorkout}
                     disabled={isFinishing}
-                    className="w-full bg-green-500 hover:bg-green-400 text-black font-teko text-3xl uppercase py-4 rounded-xl shadow-[0_0_20px_rgba(34,197,94,0.4)] transition-all active:scale-[0.98] disabled:opacity-50"
+                    className="w-full bg-green-500 hover:bg-green-400 text-black font-teko text-3xl uppercase py-4 rounded-xl shadow-[0_0_20px_rgba(34,197,94,0.4)] transition-all active:scale-[0.98] disabled:opacity-50 mx-auto max-w-xl block"
                 >
                     {isFinishing ? "GUARDANDO..." : "TERMINAR ENTRENAMIENTO"}
                 </button>
             </div>
             {/* Share Modal */}
-            {showShareModal && (
-                <WorkoutShareModal
-                    day={workoutStats.day}
-                    duration={workoutStats.duration}
-                    exerciseCount={workoutStats.exerciseCount}
-                    onClose={() => navigate('/profile')}
-                />
-            )}
-        </div>
+            {
+                showShareModal && (
+                    <WorkoutShareModal
+                        day={workoutStats.day}
+                        duration={workoutStats.duration}
+                        exerciseCount={workoutStats.exerciseCount}
+                        stats={userStats}
+                        onClose={() => navigate('/profile')}
+                    />
+                )
+            }
+        </div >
     );
 }

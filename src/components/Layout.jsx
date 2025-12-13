@@ -7,7 +7,7 @@ export default function Layout({ children }) {
             <footer className="border-t border-zinc-900 py-12 bg-zinc-950">
                 <div className="mx-auto max-w-7xl px-6 flex flex-col items-center justify-center text-center">
                     <p className="text-zinc-500 font-teko text-xl tracking-wide mb-2">
-                        CONSTRUYE TU LEGADO
+                        DESAFÍA TUS LÍMITES
                     </p>
                     <p className="text-zinc-600 font-inter text-sm mb-6">
                         por <a href="https://carlos-gallegos-portfolio.vercel.app" target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-green-500 transition-colors cursor-pointer">Carlos Gallegos</a>
