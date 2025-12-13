@@ -8,7 +8,7 @@ const Auth = () => {
     const [error, setError] = useState(null);
     const [form, setForm] = useState({ email: '', password: '', username: '' });
 
-    const { signIn, signUp } = useAuth();
+    const { signIn, signUp, signInWithGoogle } = useAuth();
     const navigate = useNavigate();
 
     const handleChange = (e) => {
