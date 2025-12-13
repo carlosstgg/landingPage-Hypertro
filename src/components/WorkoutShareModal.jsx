@@ -102,7 +102,7 @@ export default function WorkoutShareModal({ day, duration, exerciseCount, onClos
 
                     {/* Footer */}
                     <div className="z-10 text-center mb-4">
-                        <p className="text-zinc-500 text-xs font-inter tracking-widest uppercase">
+                        <p className="text-zinc-500 text-xs font-inter tracking-widest uppercase font-bold">
                             DESAFÍA TUS LÍMITES
                         </p>
                         <p className="text-green-600/50 text-[10px] mt-1">
