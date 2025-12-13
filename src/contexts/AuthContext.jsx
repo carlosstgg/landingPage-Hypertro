@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // 1. Revisar sesión activa al cargar
+        // 1. Check active session on load
         supabase.auth.getSession().then(({ data: { session } }) => {
             setUser(session?.user ?? null);
             setLoading(false);
@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
             setLoading(false);
         });
 
-        // 2. Escuchar cambios (Login, Logout, Auto-refresh)
+        // 2. Listen for changes (Login, Logout, Auto-refresh)
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setUser(session?.user ?? null);
             setLoading(false);

@@ -91,26 +91,10 @@ export default function Workout() {
                 currentExercises.forEach((currentEx, index) => {
                     // Find the most recent log that contains this exercise
                     const lastLog = data.find(log => {
-                        const logExercises = log.exercises || {};
-                        // Check if we can find by exact name in the log's values
-                        // The structure is weird: log.exercises is { "0": [...sets], "1": ... } OR { "Exercise Name": ... } ?
-                        // Let's assume the previous structure we built: it relies on Order/Index? 
-                        // Actually, in `finishWorkout`, we save it as `exerciseLogs` which is { index: [...] }.
-                        // This is fragile. We need to save Exercise Name in the log to be robust.
-                        // BUT, for now, let's rely on the Routine ID similarity or just check if the routine_day matches.
-                        // If we are strictly checking `routine_day === day`, then Index matching is "okay" for now.
+                        // Assuming exercise order/index is consistent for now or falling back to simple match
                         return true;
                     });
-
-                    // REVISION: We are saving logs with `exercises` as the state: { "0": [], "1": [] }.
-                    // We don't have the names in the DB JSON unless we put them there.
-                    // Improving `finishWorkout` to save Names would be better for v2.
-                    // For now, let's stick to the `routine_day` filter we had, but maybe fetch a bit more history if needed.
-                    // Actually, let's stick to the single last log of THIS routine_day for simplicity/consistency.
                 });
-
-                // Let's revert to the index-based matching for this specific routine_day for now, 
-                // but improve the display to calculate a "Best" or just "Last".
             }
 
             // Fetch last log specifically for this routine Day
@@ -206,8 +190,7 @@ export default function Workout() {
     const executeFinishHelper = async () => {
         setIsFinishing(true);
         const durationMinutes = Math.round((new Date() - startTime) / 60000) || 1;
-        // Count exercises as "done" if at least one set is completed (or all? usually volume > 0 is good enough for participation)
-        // Let's count 'exercises where at least 1 set was logged'.
+        // Count exercises as "done" if at least one set is completed
         const exerciseCount = Object.keys(exerciseLogs).filter(idx =>
             exerciseLogs[idx]?.some(set => set.completed)
         ).length;
@@ -227,17 +210,8 @@ export default function Workout() {
 
             if (logError) throw logError;
 
-            // 2. (Optional) We could save specific set data here if we had inputs for actual rep/weight performed.
-            // For now, we assume if checked, they did the target sets/reps.
-            // Let's increment a 'streak' or something in profile? (Trigger handles profile creation, but specific streak logic is custom).
-
-            // Update Profile Streak (Simple +1 for now)
+            // 2. Update Profile Streak
             const { error: profileError } = await supabase.rpc('increment_streak', { user_id_param: user.id });
-            // Note: We need to create this RPC function or just do an update query. 
-            // Let's do a simple update for now to avoid SQL complexity unless needed.
-
-            // Simple update approach:
-
 
             // 3. FETCH UPDATED STATS FOR SHARE CARD
             // We need to recalculate them to show the *new* level/rank
@@ -301,7 +275,6 @@ export default function Workout() {
             };
             setUserStats(calculatedStats);
 
-            // INSTEAD OF NAVIGATING, SHOW MODAL
             // Find the split name (e.g., "Push", "Legs") for the active day
             const dayIndex = routine.structure.daysSelected.indexOf(activeDay);
             const splitName = routine.structure.routineSplits[dayIndex] || activeDay;

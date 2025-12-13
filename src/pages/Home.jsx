@@ -28,9 +28,7 @@ export default function Home() {
     // OR if they are editing a routine (data param present).
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
-        const hasData = params.get("data"); // Allow viewing shared routines even if logged in (?) 
-        // Actually, if simply visiting home while logged in -> Profile.
-        // If visiting /create -> Stay.
+        const hasData = params.get("data");
 
         if (user && location.pathname === '/' && !hasData) {
             navigate('/profile');
@@ -396,7 +394,7 @@ export default function Home() {
                     </div>
                     <div className="flex-grow overflow-y-auto p-4">
                         <ExerciseList
-                            splits={[activeAddDay.split]} // Logic still needs english
+                            splits={[activeAddDay.split]}
                             onExerciseClick={handleExerciseClick}
                         />
                     </div>

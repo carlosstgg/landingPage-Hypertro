@@ -28,14 +28,14 @@ const Auth = () => {
                     password: form.password,
                 });
                 if (error) throw error;
-                navigate('/'); // Redirigir al home tras login
+                navigate('/'); // Redirect to home after login
             } else {
                 const { error } = await signUp({
                     email: form.email,
                     password: form.password,
                     options: {
                         data: {
-                            full_name: form.username, // Se guardará en metadata y luego en profiles por el trigger
+                            full_name: form.username, // Will be saved in metadata and then in profiles via trigger
                         },
                     },
                 });

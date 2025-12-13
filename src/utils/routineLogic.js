@@ -47,7 +47,7 @@ export function getSplitRequirements(splitType) {
     if (lower.includes("pull")) {
         return [
             { muscle: "Espalda", count: 3 },
-            { muscle: "Hombros", count: 1 }, // Rear delt usually
+            { muscle: "Hombros", count: 1 }, // Rear delts primarily
             { muscle: "Bíceps", count: 2 }
         ];
     }

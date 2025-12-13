@@ -37,19 +37,9 @@ const ExerciseList = ({ splits, onExerciseClick }) => {
         // 1. Split match
         const matchesSplit = uniqueSplits.includes(ex.type) ||
             (uniqueSplits.includes("full body") && ex.type === "full body") ||
-            // Allow cross-pollination for "General" or if searching globally? 
-            // For now keep strict to avoid errors on drop.
-            // Actually, let's allow finding ANY exercise if the user is explicitly searching, 
-            // BUT the drop validation in RoutinePreview might reject it?
-            // RoutinePreview validation: 
-            // isValid = normalizeSplit.includes(normalizeType) || (normalizeSplit === "full body" && ...)
-            // So if we show a Leg exercise on Push day, drop will fail/error.
-            // Better to keep strict filtering by split to prevent frustration.
-            // EXCEPT: If uniqueSplits includes 'full body', it matches 'full body' type. 
-            // Wait, routineLogic usually maps split names.
-            // If splits are ["Push"], uniqueSplits is ["push"].
-            // If I search "bicep", and "bicep" is "pull", it won't show. Correct.
-            uniqueSplits.some(s => s.includes(ex.type)); // loose match for "Push A" -> "push"
+            // Filter by strict split match or allow check if searching
+            // 'full body' split enables 'full body' exercises
+            uniqueSplits.some(s => s.includes(ex.type));
 
         // 2. Search match
         const matchesSearch = ex.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
