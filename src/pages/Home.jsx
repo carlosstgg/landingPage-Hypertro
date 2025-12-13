@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import DaySelector from "../components/DaySelector";
 import RoutinePreview from "../components/RoutinePreview";
 import ExerciseList from "../components/ExerciseList";
@@ -14,15 +15,50 @@ export default function Home() {
     const [routineExercises, setRoutineExercises] = useState({});
     const [showClearConfirm, setShowClearConfirm] = useState(false);
     const [showShareModal, setShowShareModal] = useState(false);
+    const [showNameModal, setShowNameModal] = useState(false); // State for custom name modal
     const routineRef = useRef(null);
 
     const [activeAddDay, setActiveAddDay] = useState(null); // { day, split }
+
+    const { user } = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    // Redirect logged-in users if they land on root '/' but allow access if on '/create'
+    // OR if they are editing a routine (data param present).
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const hasData = params.get("data"); // Allow viewing shared routines even if logged in (?) 
+        // Actually, if simply visiting home while logged in -> Profile.
+        // If visiting /create -> Stay.
+
+        if (user && location.pathname === '/' && !hasData) {
+            navigate('/profile');
+        }
+    }, [user, location, navigate]);
+
+    const [editId, setEditId] = useState(null);
+    const [initialName, setInitialName] = useState("");
 
     // Load state from URL on mount
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const data = params.get("data");
-        if (data) {
+        const id = params.get("id") || params.get("editId"); // Support both
+
+        const fetchRoutine = async (id) => {
+            const { data, error } = await supabase.from('routines').select('*').eq('id', id).single();
+            if (data && !error) {
+                setEditId(id);
+                setInitialName(data.name);
+                setDaysSelected(data.structure.daysSelected);
+                setRoutineExercises(data.structure.routineExercises);
+            }
+        };
+
+        if (id && user) {
+            fetchRoutine(id);
+        } else if (data) {
             const decoded = decodeRoutine(data);
             if (decoded) {
                 setDaysSelected(decoded.daysSelected);
@@ -34,7 +70,7 @@ export default function Home() {
                 }, 500);
             }
         }
-    }, []);
+    }, [user]);
 
     const routineSplits = generateSplit(daysSelected);
 
@@ -137,13 +173,12 @@ export default function Home() {
     };
 
     // --- Save Logic (Supabase) ---
-    const { user } = useAuth();
+    // const { user } = useAuth(); // Already accessed at top
     const [isSaving, setIsSaving] = useState(false);
 
-    const handleSaveRoutine = async () => {
+    const initiateSave = () => {
         if (!user) {
             toast.error("Debes iniciar sesión para guardar rutinas.");
-            // Opcional: navigate('/auth');
             return;
         }
 
@@ -152,27 +187,51 @@ export default function Home() {
             return;
         }
 
-        const name = prompt("Dale un nombre a tu rutina (ej. PPL Destructor):");
-        if (!name) return;
+        setShowNameModal(true);
+    };
 
+    const handleSaveRoutine = async (name) => {
         setIsSaving(true);
+        setShowNameModal(false); // Close modal immediately
+
         try {
-            const { error } = await supabase
-                .from('routines')
-                .insert([
-                    {
-                        user_id: user.id,
+            let error;
+            if (editId) {
+                // Update existing
+                const { error: err } = await supabase
+                    .from('routines')
+                    .update({
                         name: name,
                         structure: {
                             daysSelected,
                             routineSplits,
                             routineExercises
                         }
-                    }
-                ]);
+                    })
+                    .eq('id', editId);
+                error = err;
+            } else {
+                // Create new
+                const { error: err } = await supabase
+                    .from('routines')
+                    .insert([
+                        {
+                            user_id: user.id,
+                            name: name,
+                            structure: {
+                                daysSelected,
+                                routineSplits,
+                                routineExercises
+                            }
+                        }
+                    ]);
+                error = err;
+            }
 
             if (error) throw error;
-            toast.success("¡Rutina guardada exitosamente en tu perfil!");
+            toast.success(editId ? "¡Rutina actualizada!" : "¡Rutina guardada exitosamente!");
+            // Optional: navigate back to profile after edit
+            if (editId) navigate('/profile');
         } catch (error) {
             console.error('Error saving routine:', error);
             toast.error("Hubo un error al guardar la rutina.");
@@ -243,6 +302,51 @@ export default function Home() {
                         >
                             ENTENDIDO
                         </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Custom Modal for Naming Routine */}
+            {showNameModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-zinc-900 border border-green-500/30 rounded-xl p-6 max-w-md w-full shadow-2xl shadow-green-900/10 transform animate-in zoom-in-95 duration-200">
+                        <h3 className="text-3xl font-teko text-white mb-2 uppercase">{editId ? "ACTUALIZAR RUTINA" : "NOMBRA TU OBRA MAESTRA"}</h3>
+                        <p className="text-zinc-400 font-inter mb-6 text-sm">
+                            Dale un nombre épico a tu rutina (ej. "PPL Destructor", "Torso/Pierna Zeus").
+                        </p>
+
+                        <form onSubmit={(e) => {
+                            e.preventDefault();
+                            const formData = new FormData(e.target);
+                            const name = formData.get('routineName');
+                            if (name) handleSaveRoutine(name);
+                        }}>
+                            <input
+                                name="routineName"
+                                type="text"
+                                autoFocus
+                                defaultValue={initialName} // Pre-fill name if editing
+                                placeholder="Escribe el nombre aquí..."
+                                className="w-full bg-black/50 border border-zinc-700 rounded-lg p-3 text-white font-inter mb-6 focus:border-green-500 focus:outline-none transition-colors"
+                                autoComplete="off"
+                            />
+
+                            <div className="flex justify-end gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowNameModal(false)}
+                                    className="px-4 py-2 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors font-medium font-inter text-sm"
+                                >
+                                    CANCELAR
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="bg-green-600 hover:bg-green-500 text-black px-6 py-2 rounded-lg font-bold font-teko tracking-wide transition-colors text-lg"
+                                >
+                                    GUARDAR
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}
@@ -325,7 +429,7 @@ export default function Home() {
                     </button>
 
                     <button
-                        onClick={handleSaveRoutine}
+                        onClick={initiateSave}
                         disabled={isSaving || !hasExercises}
                         className={`text-white px-3 py-2 rounded-lg font-bold font-teko tracking-wide transition-colors flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 shadow-lg shadow-blue-900/20
                             ${(isSaving || !hasExercises)

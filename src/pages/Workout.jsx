@@ -13,9 +13,10 @@ export default function Workout() {
     const [routine, setRoutine] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activeDay, setActiveDay] = useState(null); // The day currently being trained (e.g., "Mon" or "Push")
-    const [completedExercises, setCompletedExercises] = useState({}); // {exerciseIndex: true/false}
+    const [exerciseLogs, setExerciseLogs] = useState({}); // { index: { weight, reps, completed } }
     const [startTime, setStartTime] = useState(null);
     const [isFinishing, setIsFinishing] = useState(false);
+    const [historyLogs, setHistoryLogs] = useState({}); // { exIndex: { setIndex: { weight, reps } } }
 
     // Share Modal State
     const [showShareModal, setShowShareModal] = useState(false);
@@ -51,17 +52,75 @@ export default function Workout() {
     const handleStartDay = (day) => {
         setActiveDay(day);
         setStartTime(new Date());
-        setCompletedExercises({});
+
+        // Initialize logs structure for sets
+        const dayExercises = routine.structure.routineExercises[day] || [];
+        const initialLogs = {};
+
+        dayExercises.forEach((ex, index) => {
+            const numSets = Number(ex.sets) || 3;
+            initialLogs[index] = Array(numSets).fill(null).map(() => ({
+                weight: '',
+                reps: '',
+                completed: false
+            }));
+        });
+
+        setExerciseLogs(initialLogs);
+        setExerciseLogs(initialLogs);
+        fetchHistory(day); // Fetch history when measuring starts
     };
 
-    const toggleExercise = (index) => {
-        // Haptic Feedback for mobile feel
-        if (navigator.vibrate) navigator.vibrate(50);
+    const fetchHistory = async (day) => {
+        try {
+            // Fetch last log for this routine_day
+            const { data, error } = await supabase
+                .from('workout_logs')
+                .select('exercises')
+                .eq('user_id', user.id)
+                .eq('routine_day', day)
+                .order('date', { ascending: false })
+                .limit(1)
+                .maybeSingle();
 
-        setCompletedExercises(prev => ({
-            ...prev,
-            [index]: !prev[index]
-        }));
+            if (error) console.error("Error fetching history:", error);
+
+            if (data && data.exercises) {
+                // Map the exercises from the last log to the current structure
+                // Assuming Index consistency for now (Phase 1 MVP)
+                setHistoryLogs(data.exercises);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleSetChange = (exIndex, setIndex, field, value) => {
+        setExerciseLogs(prev => {
+            const exerciseSets = [...(prev[exIndex] || [])];
+            exerciseSets[setIndex] = { ...exerciseSets[setIndex], [field]: value };
+            return { ...prev, [exIndex]: exerciseSets };
+        });
+    };
+
+    const toggleSetComplete = (exIndex, setIndex) => {
+        const currentSet = exerciseLogs[exIndex]?.[setIndex];
+        if (!currentSet) return;
+
+        // Validation before checking
+        if (!currentSet.completed) {
+            if (!currentSet.weight || !currentSet.reps || Number(currentSet.weight) <= 0 || Number(currentSet.reps) <= 0) {
+                toast.error("¡Completa los datos del set!");
+                return;
+            }
+            if (navigator.vibrate) navigator.vibrate(50);
+        }
+
+        setExerciseLogs(prev => {
+            const exerciseSets = [...(prev[exIndex] || [])];
+            exerciseSets[setIndex] = { ...exerciseSets[setIndex], completed: !exerciseSets[setIndex].completed };
+            return { ...prev, [exIndex]: exerciseSets };
+        });
     };
 
     const finishWorkout = async () => {
@@ -109,8 +168,12 @@ export default function Workout() {
 
     const executeFinishHelper = async () => {
         setIsFinishing(true);
-        const durationMinutes = Math.round((new Date() - startTime) / 60000) || 1; // Ensure at least 1 min
-        const exerciseCount = Object.keys(completedExercises).filter(key => completedExercises[key]).length; // Count completed ones
+        const durationMinutes = Math.round((new Date() - startTime) / 60000) || 1;
+        // Count exercises as "done" if at least one set is completed (or all? usually volume > 0 is good enough for participation)
+        // Let's count 'exercises where at least 1 set was logged'.
+        const exerciseCount = Object.keys(exerciseLogs).filter(idx =>
+            exerciseLogs[idx]?.some(set => set.completed)
+        ).length;
 
         try {
             // 1. Create Workout Log
@@ -120,7 +183,7 @@ export default function Workout() {
                     user_id: user.id,
                     routine_day: activeDay,
                     duration_minutes: durationMinutes,
-                    // routine_id: routineId, // Optional if we want to link it strictly
+                    exercises: exerciseLogs // Requires 'exercises' JSONB column in Supabase
                 }])
                 .select()
                 .single();
@@ -233,46 +296,88 @@ export default function Workout() {
                 {dayExercises.length === 0 ? (
                     <p className="text-zinc-500 text-center py-10">Día de descanso (o sin ejercicios).</p>
                 ) : (
-                    dayExercises.map((ex, i) => {
-                        const isDone = completedExercises[i];
+                    dayExercises.map((ex, exIdx) => {
+                        // Determine if exercise is fully done (visual flair)
+                        const sets = exerciseLogs[exIdx] || [];
+                        const allDone = sets.length > 0 && sets.every(s => s.completed);
+
                         return (
-                            <div
-                                key={i}
-                                onClick={() => toggleExercise(i)}
-                                className={`
-                                    relative overflow-hidden p-6 rounded-2xl border transition-all duration-300 cursor-pointer select-none
-                                    ${isDone
-                                        ? "bg-green-900/10 border-green-500/30"
-                                        : "bg-zinc-900 border-zinc-800"
-                                    }
-                                `}
-                            >
-                                <div className="flex justify-between items-center relative z-10">
-                                    <div>
-                                        <h3 className={`font-teko text-3xl uppercase transition-colors ${isDone ? "text-green-500 line-through decoration-2" : "text-white"}`}>
-                                            {ex.name}
-                                        </h3>
-                                        <div className="flex gap-4 mt-1">
-                                            <div className="bg-black/30 px-3 py-1 rounded text-zinc-400 text-sm font-inter">
-                                                <span className="text-white font-bold">{ex.sets || 3}</span> Sets
-                                            </div>
-                                            <div className="bg-black/30 px-3 py-1 rounded text-zinc-400 text-sm font-inter">
-                                                <span className="text-white font-bold">{ex.reps || "8-12"}</span> Reps
-                                            </div>
-                                        </div>
+                            <div key={exIdx} className={`rounded-2xl border transition-all duration-300 overflow-hidden ${allDone ? 'border-green-500/30 bg-green-900/5' : 'border-zinc-800 bg-zinc-900'}`}>
+                                {/* Header */}
+                                <div className="bg-zinc-950/50 p-4 border-b border-zinc-800/50 flex justify-between items-center">
+                                    <h3 className={`font-teko text-2xl uppercase ${allDone ? 'text-green-500' : 'text-white'}`}>
+                                        {ex.name}
+                                    </h3>
+                                    <span className="text-xs text-zinc-500 font-inter font-bold tracking-wider">
+                                        {sets.length} SETS
+                                    </span>
+                                </div>
+
+                                {/* Sets List */}
+                                <div className="p-2 space-y-1">
+                                    {/* Labels Header */}
+                                    <div className="grid grid-cols-[0.5fr_1fr_1fr_0.5fr] gap-2 px-2 py-1 text-[10px] items-center text-center text-zinc-600 font-bold uppercase tracking-wider">
+                                        <span>Set</span>
+                                        <span>KG</span>
+                                        <span>Reps</span>
+                                        <span>Hecho</span>
                                     </div>
 
-                                    <div className={`
-                                        w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all
-                                        ${isDone
-                                            ? "bg-green-500 border-green-500 text-black scale-110 shadow-[0_0_15px_rgba(34,197,94,0.5)]"
-                                            : "border-zinc-700 text-transparent hover:border-zinc-500"
-                                        }
-                                    `}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" strokeWidth="3" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                                        </svg>
-                                    </div>
+                                    {sets.map((setLog, setIdx) => {
+                                        const isSetDone = setLog.completed;
+                                        return (
+                                            <div key={setIdx} className={`grid grid-cols-[0.5fr_1fr_1fr_0.5fr] gap-2 items-center p-2 rounded-lg transition-colors ${isSetDone ? 'bg-green-500/10' : 'bg-black/20'}`}>
+                                                {/* Set Number */}
+                                                <div className="flex justify-center">
+                                                    <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center text-xs text-zinc-400 font-bold">
+                                                        {setIdx + 1}
+                                                    </div>
+                                                </div>
+
+                                                {/* Weight Input */}
+                                                <div className="relative">
+                                                    <input
+                                                        type="number"
+                                                        placeholder={isSetDone ? "" : (historyLogs[exIdx]?.[setIdx]?.weight || "0")}
+                                                        value={setLog.weight}
+                                                        onChange={(e) => handleSetChange(exIdx, setIdx, 'weight', e.target.value)}
+                                                        disabled={isSetDone}
+                                                        className={`w-full bg-black/40 border ${isSetDone ? 'border-transparent text-green-500' : 'border-zinc-800 text-white focus:border-green-500'} rounded p-2 text-center font-teko text-xl focus:outline-none transition-colors`}
+                                                    />
+                                                </div>
+
+                                                {/* Reps Input */}
+                                                <div className="relative">
+                                                    <input
+                                                        type="number"
+                                                        placeholder={isSetDone ? "" : (historyLogs[exIdx]?.[setIdx]?.reps || "0")}
+                                                        value={setLog.reps}
+                                                        onChange={(e) => handleSetChange(exIdx, setIdx, 'reps', e.target.value)}
+                                                        disabled={isSetDone}
+                                                        className={`w-full bg-black/40 border ${isSetDone ? 'border-transparent text-green-500' : 'border-zinc-800 text-white focus:border-green-500'} rounded p-2 text-center font-teko text-xl focus:outline-none transition-colors`}
+                                                    />
+                                                </div>
+
+                                                {/* Check Button */}
+                                                <div className="flex justify-center">
+                                                    <button
+                                                        onClick={() => toggleSetComplete(exIdx, setIdx)}
+                                                        className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${isSetDone ? 'bg-green-500 text-black shadow-[0_0_10px_rgba(34,197,94,0.4)]' : 'bg-zinc-800 text-zinc-600 hover:bg-zinc-700 hover:text-zinc-300'}`}
+                                                    >
+                                                        {isSetDone ? (
+                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+                                                                <path fillRule="evenodd" d="M19.916 4.626a.75.75 0 0 1 .207 1.012l-7.5 13a.75.75 0 0 1-1.215 0l-4.5-7.794a.75.75 0 1 1 1.258-.726l3.916 6.782 6.822-11.82a.75.75 0 0 1 1.012-.207Z" clipRule="evenodd" />
+                                                            </svg>
+                                                        ) : (
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                                            </svg>
+                                                        )}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         );
