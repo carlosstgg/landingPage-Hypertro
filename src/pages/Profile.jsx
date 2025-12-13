@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../supabaseClient";
 import { encodeRoutine } from "../utils/urlState";
@@ -8,7 +8,13 @@ import RoutinePreview from "../components/RoutinePreview";
 import toast from 'react-hot-toast';
 
 export default function Profile() {
-    const { user } = useAuth();
+    const { user, signOut } = useAuth();
+    const navigate = useNavigate();
+
+    const handleSignOut = async () => {
+        await signOut();
+        navigate('/');
+    };
     const [routines, setRoutines] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -155,10 +161,7 @@ export default function Profile() {
 
             <div className="mt-20 flex justify-center border-t border-zinc-900 pt-8">
                 <button
-                    onClick={async () => {
-                        const { error } = await supabase.auth.signOut();
-                        if (!error) window.location.href = "/";
-                    }}
+                    onClick={handleSignOut}
                     className="text-zinc-600 hover:text-red-500 font-teko uppercase text-xl transition-colors flex items-center gap-2 group"
                 >
                     Cerrar Sesión
@@ -167,6 +170,6 @@ export default function Profile() {
                     </svg>
                 </button>
             </div>
-        </div>
+        </div >
     );
 }
