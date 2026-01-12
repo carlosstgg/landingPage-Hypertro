@@ -1,36 +1,131 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# HYPERTRO Landing Page
 
-## Getting Started
+<div align="center">
+  <img src="public/logo.png" alt="HYPERTRO Logo" width="120" />
+  <h3>La Evolución de tu Entrenamiento</h3>
+  <p>Landing page oficial de HYPERTRO - La app que fusiona el seguimiento profesional de hipertrofia con mecánicas RPG</p>
+</div>
 
-First, run the development server:
+---
+
+> ⚠️ **Nota:** La aplicación web de HYPERTRO ha sido migrada a una **aplicación móvil nativa**. Este repositorio ahora contiene únicamente la **landing page** promocional.
+
+## 🚀 Sobre HYPERTRO
+
+HYPERTRO es una aplicación móvil de fitness que revoluciona la forma de entrenar, combinando:
+
+- 🎮 **Gamificación RPG** - Sube de nivel, desbloquea rangos y construye tu legado
+- 📊 **Seguimiento Profesional** - Registro detallado de entrenamientos y progreso
+- 🏆 **Sistema de Logros** - Badges exclusivos y recompensas por tu dedicación
+- 📱 **Experiencia Móvil Nativa** - Disponible próximamente en iOS y Android
+
+## 🌐 Landing Page Features
+
+Esta landing page incluye:
+
+- ✨ Diseño moderno con animaciones fluidas (Framer Motion)
+- 📱 Responsive design para todos los dispositivos
+- 🎨 Estética premium con gradientes y efectos glassmorphism
+- 📧 **Sistema de Lista de Espera** con códigos promocionales únicos
+- 🔢 Contador de plazas limitadas para fundadores (1000 spots)
+- 🗄️ Integración con Supabase para almacenamiento de datos
+
+## 🛠️ Tech Stack
+
+- **Framework:** Next.js 16 (App Router)
+- **Styling:** Tailwind CSS
+- **Animations:** Framer Motion
+- **Database:** Supabase
+- **Icons:** Lucide React
+- **Fonts:** Google Fonts (Teko, Inter)
+
+## 📦 Instalación
 
 ```bash
+# Clonar el repositorio
+git clone https://github.com/carlosstgg/landingPage-Hypertro.git
+
+# Instalar dependencias
+npm install
+
+# Configurar variables de entorno
+cp .env.example .env
+# Editar .env con tus credenciales de Supabase
+
+# Iniciar servidor de desarrollo
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔐 Variables de Entorno
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Crea un archivo `.env` con las siguientes variables:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+NEXT_PUBLIC_SUPABASE_URL=tu_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_supabase_anon_key
+```
 
-## Learn More
+## 📄 Base de Datos
 
-To learn more about Next.js, take a look at the following resources:
+Ejecuta el siguiente SQL en Supabase para crear la tabla de waitlist:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```sql
+CREATE TABLE waitlist (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  promo_code TEXT UNIQUE NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  email_sent BOOLEAN DEFAULT FALSE
+);
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+ALTER TABLE waitlist ENABLE ROW LEVEL SECURITY;
 
-## Deploy on Vercel
+CREATE POLICY "Allow anonymous inserts" ON waitlist
+  FOR INSERT TO anon WITH CHECK (true);
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🎯 Promoción Fundadores
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Los primeros 1000 usuarios que se registren en la lista de espera reciben:
+- 🏅 Badge exclusivo "Fundador"
+- 🎁 1 mes de Premium gratis
+
+## 📁 Estructura del Proyecto
+
+```
+src/
+├── app/
+│   ├── api/waitlist/    # API para lista de espera
+│   ├── privacy/         # Política de privacidad
+│   ├── terms/           # Términos y condiciones
+│   ├── layout.tsx       # Layout principal
+│   └── page.tsx         # Página principal
+├── components/
+│   ├── Hero.tsx         # Sección hero con carousel
+│   ├── Features.tsx     # Características de la app
+│   ├── Gamification.tsx # Sección de gamificación
+│   ├── Navbar.tsx       # Navegación
+│   └── Footer.tsx       # Pie de página
+└── lib/
+    └── supabase.ts      # Cliente de Supabase
+```
+
+## 📱 Aplicación Móvil
+
+La aplicación móvil de HYPERTRO está siendo desarrollada y estará disponible próximamente en:
+- 📱 App Store (iOS)
+- 🤖 Google Play (Android)
+
+## 👨‍💻 Autor
+
+Desarrollado por **Carlos Gallegos**
+
+## 📄 Licencia
+
+Este proyecto es privado y todos los derechos están reservados.
+
+---
+
+<div align="center">
+  <strong>HYPERTRO</strong> - Construye tu legado 💪
+</div>
