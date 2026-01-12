@@ -37,7 +37,7 @@ export default function PrivacyPage() {
 
             <h2 className="text-3xl font-teko uppercase text-white mt-12 mb-4 border-b border-white/10 pb-2">5. Contacto</h2>
             <p>Si tiene alguna pregunta sobre esta Política de Privacidad, puede contactarnos:
-            <br/>Por email: <a href="mailto:privacy@hypertro.app" className="text-primary hover:underline">privacy@hypertro.app</a></p>
+            <br/>Por email: <a href="mailto:gallegosgutierrezj62@gmail.com" className="text-primary hover:underline">privacy@hypertro.app</a></p>
         </div>
       </div>
       <Footer />
