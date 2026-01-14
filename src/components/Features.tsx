@@ -38,8 +38,8 @@ export default function Features() {
          viewport={{ once: true }}
          className="mb-16"
        >
-          <h2 className="text-primary text-xl font-bold tracking-widest mb-2">ARSENAL DEFINITIVO</h2>
-          <h3 className="text-5xl md:text-7xl font-teko uppercase text-white">Domina las Herramientas</h3>
+          <h2 className="text-primary text-xl font-bold tracking-widest mb-2">EL GYM TRACKER DEFINITIVO</h2>
+          <h3 className="text-5xl md:text-7xl font-teko uppercase text-white">Funcionalidades Destacadas</h3>
        </motion.div>
 
        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
