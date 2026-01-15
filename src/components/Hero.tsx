@@ -3,16 +3,19 @@ import { useState } from 'react';
 import { motion } from "framer-motion";
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-
-const screenshots = [
-  { src: "/1000384038.jpg", label: "Próxima Sesión" },
-  { src: "/1000384034.jpg", label: "Tu Perfil" },
-  { src: "/1000384040.jpg", label: "Registro" },
-  { src: "/1000384042.jpg", label: "Completado" },
-  { src: "/1000384046.jpg", label: "Tu Legado" },
-];
+import { useTranslations } from 'next-intl';
 
 export default function Hero() {
+  const t = useTranslations('Hero');
+  
+  const screenshots = [
+    { src: "/1000384038.jpg", label: t('screenshots.next_session') },
+    { src: "/1000384034.jpg", label: t('screenshots.profile') },
+    { src: "/1000384040.jpg", label: t('screenshots.log') },
+    { src: "/1000384042.jpg", label: t('screenshots.completed') },
+    { src: "/1000384046.jpg", label: t('screenshots.legacy') },
+  ];
+
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const nextSlide = () => {
@@ -49,22 +52,22 @@ export default function Hero() {
         className="text-center z-10 max-w-5xl px-4 flex flex-col items-center"
       >
         <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-teko uppercase font-bold leading-[0.9] mb-8 tracking-tight">
-          <span className="block text-white">La Evolución de</span>
+          <span className="block text-white">{t('title_prefix')}</span>
           <span className="block relative mt-1">
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-emerald-400 to-primary">
-              tu Entrenamiento
+              {t('title_highlight')}
             </span>
             <span 
               className="absolute inset-0 text-primary blur-2xl opacity-30 select-none -z-10" 
               aria-hidden="true"
             >
-              tu Entrenamiento
+              {t('title_highlight')}
             </span>
           </span>
         </h1>
         
         <p className="text-gray-400 text-base sm:text-lg md:text-xl font-inter max-w-2xl mx-auto mb-10 leading-relaxed">
-          Convierte tu disciplina en poder. Seguimiento profesional de hipertrofia fusionado con mecánicas RPG. Tu legado comienza hoy.
+          {t('subtitle')}
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full max-w-lg">
@@ -75,8 +78,8 @@ export default function Hero() {
                   <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
                 </svg>
                 <div className="text-left">
-                    <div className="text-[10px] uppercase font-semibold tracking-wider opacity-70 leading-tight">Próximamente en</div>
-                    <div className="text-xl font-semibold leading-tight -mt-0.5">App Store</div>
+                    <div className="text-[10px] uppercase font-semibold tracking-wider opacity-70 leading-tight">{t('coming_soon')}</div>
+                    <div className="text-xl font-semibold leading-tight -mt-0.5">{t('app_store')}</div>
                 </div>
             </button>
 
@@ -87,8 +90,8 @@ export default function Hero() {
                   <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.198l2.807 1.626a1 1 0 0 1 0 1.73l-2.808 1.626L15.206 12l2.492-2.491zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/>
                 </svg>
                 <div className="text-left">
-                    <div className="text-[10px] uppercase font-semibold tracking-wider opacity-70 leading-tight">Próximamente en</div>
-                    <div className="text-xl font-semibold leading-tight -mt-0.5">Google Play</div>
+                    <div className="text-[10px] uppercase font-semibold tracking-wider opacity-70 leading-tight">{t('coming_soon')}</div>
+                    <div className="text-xl font-semibold leading-tight -mt-0.5">{t('google_play')}</div>
                 </div>
             </button>
         </div>

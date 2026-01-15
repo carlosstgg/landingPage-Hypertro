@@ -7,8 +7,10 @@ import Features from "@/components/Features";
 import Gamification from "@/components/Gamification";
 import Footer from "@/components/Footer";
 import { Mail, Loader2, CheckCircle, Copy, Check, XCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function Home() {
+  const t = useTranslations('Waitlist');
   // Waitlist form states
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -65,7 +67,7 @@ export default function Home() {
         setSpotsLeft(data.spotsLeft);
       }
     } catch {
-      setErrorMessage('Error de conexión. Inténtalo de nuevo.');
+      setErrorMessage(t('error_connection'));
     } finally {
       setIsLoading(false);
     }
@@ -93,10 +95,10 @@ export default function Home() {
              
              <div className="relative z-10">
                 <h2 className="text-4xl md:text-6xl font-teko uppercase text-white mb-6 leading-none">
-                  ¿Listo para dejar tu <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Legado</span>?
+                  {t('title')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">{t('title_highlight')}</span>{t('title_suffix')}
                 </h2>
                 <p className="text-gray-400 mb-6 max-w-xl mx-auto text-lg font-inter">
-                  Únete a la lista de espera hoy y recibe 1 mes de HYPERTRO Pro gratis cuando lancemos.
+                  {t('subtitle')}
                 </p>
                 
                 {/* Spots Counter */}
@@ -108,7 +110,7 @@ export default function Home() {
                   >
                     <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
                     <span className="text-primary font-semibold font-inter text-sm">
-                      {spotsLeft} plazas disponibles
+                      {t('spots_left', {count: spotsLeft})}
                     </span>
                   </motion.div>
                 )}
@@ -122,10 +124,10 @@ export default function Home() {
                   >
                     <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
                     <h3 className="text-2xl font-bold text-white mb-2 font-teko uppercase tracking-wide">
-                      ¡Promoción Agotada!
+                      {t('full_title')}
                     </h3>
                     <p className="text-gray-400 text-sm font-inter">
-                      Las 1000 plazas de Fundador ya han sido ocupadas. ¡Pero no te preocupes! Puedes descargar la app cuando esté disponible.
+                      {t('full_desc')}
                     </p>
                   </motion.div>
                 )}
@@ -143,7 +145,7 @@ export default function Home() {
                         <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                         <input 
                           type="email" 
-                          placeholder="Introduce tu correo" 
+                          placeholder={t('placeholder')} 
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           required
@@ -159,7 +161,7 @@ export default function Home() {
                         {isLoading ? (
                           <Loader2 className="w-6 h-6 animate-spin" />
                         ) : (
-                          'UNIRSE AHORA'
+                          t('join_button').toUpperCase()
                         )}
                       </button>
                     </motion.form>
@@ -172,10 +174,10 @@ export default function Home() {
                     >
                       <CheckCircle className="w-16 h-16 text-primary mx-auto mb-4" />
                       <h3 className="text-2xl font-bold text-white mb-2 font-teko uppercase tracking-wide">
-                        ¡Eres un Fundador!
+                        {t('success_title')}
                       </h3>
                       <p className="text-gray-400 text-sm mb-6 font-inter">
-                        Guarda tu código para obtener 1 mes gratis de Premium + tu badge exclusivo:
+                        {t('success_desc')}
                       </p>
                       <div className="flex items-center justify-center gap-3 bg-black/40 rounded-xl p-4 border border-white/10">
                         <code className="text-primary text-2xl font-mono font-bold tracking-wider">
@@ -184,7 +186,7 @@ export default function Home() {
                         <button
                           onClick={copyToClipboard}
                           className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-                          title="Copiar código"
+                          title={t('copy_button')}
                         >
                           {copied ? (
                             <Check className="w-6 h-6 text-primary" />
@@ -209,7 +211,7 @@ export default function Home() {
 
                 {!isSuccess && !isFull && spotsLeft !== null && (
                   <p className="mt-4 text-xs text-gray-500">
-                    ¡Solo quedan <span className="text-primary font-semibold">{spotsLeft}</span> de 1000 plazas!
+                    {t('only_left')} <span className="text-primary font-semibold">{spotsLeft}</span> {t('only_left_suffix')}
                   </p>
                 )}
              </div>

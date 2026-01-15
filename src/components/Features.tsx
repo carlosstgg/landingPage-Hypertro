@@ -1,35 +1,38 @@
 'use client';
 import { motion } from "framer-motion";
 import { Dumbbell, Trophy, Zap, Moon } from "lucide-react";
-
-const features = [
-  {
-    title: "Rastreo de Rutinas",
-    description: "Olvídate del papel y las notas. Registra cada repetición, serie y descanso con una interfaz diseñada para la velocidad en el gimnasio.",
-    icon: <Dumbbell size={32} className="text-primary" />,
-    colSpan: "col-span-1 md:col-span-2",
-  },
-  {
-    title: "Rangos y Niveles",
-    description: "Tu sudor se convierte en XP. Desbloquea rangos militares desde Recluta hasta Leyenda.",
-    icon: <Trophy size={32} className="text-secondary" />,
-    colSpan: "col-span-1",
-  },
-  {
-    title: "Widget de Racha",
-    description: "Mantén la disciplina. Visualiza tu consistencia y protege tu racha diaria.",
-    icon: <Zap size={32} className="text-orange-500" />,
-    colSpan: "col-span-1",
-  },
-  {
-    title: "Modo Oscuro Absoluto",
-    description: "Diseñado para el enfoque. Fondos OLED puros, contrastes perfectos y cero distracciones visuales.",
-    icon: <Moon size={32} className="text-gray-400" />,
-    colSpan: "col-span-1 md:col-span-2",
-  },
-];
+import { useTranslations } from 'next-intl';
 
 export default function Features() {
+  const t = useTranslations('Features');
+
+  const features = [
+    {
+      title: t('items.tracking.title'),
+      description: t('items.tracking.description'),
+      icon: <Dumbbell size={32} className="text-primary" />,
+      colSpan: "col-span-1 md:col-span-2",
+    },
+    {
+      title: t('items.ranks.title'),
+      description: t('items.ranks.description'),
+      icon: <Trophy size={32} className="text-secondary" />,
+      colSpan: "col-span-1",
+    },
+    {
+      title: t('items.streak.title'),
+      description: t('items.streak.description'),
+      icon: <Zap size={32} className="text-orange-500" />,
+      colSpan: "col-span-1",
+    },
+    {
+      title: t('items.dark_mode.title'),
+      description: t('items.dark_mode.description'),
+      icon: <Moon size={32} className="text-gray-400" />,
+      colSpan: "col-span-1 md:col-span-2",
+    },
+  ];
+
   return (
     <section id="features" className="py-24 px-6 max-w-7xl mx-auto">
        <motion.div 
@@ -38,8 +41,8 @@ export default function Features() {
          viewport={{ once: true }}
          className="mb-16"
        >
-          <h2 className="text-primary text-xl font-bold tracking-widest mb-2">EL GYM TRACKER DEFINITIVO</h2>
-          <h3 className="text-5xl md:text-7xl font-teko uppercase text-white">Funcionalidades Destacadas</h3>
+          <h2 className="text-primary text-xl font-bold tracking-widest mb-2">{t('title').toUpperCase()}</h2>
+          <h3 className="text-5xl md:text-7xl font-teko uppercase text-white">{t('subtitle')}</h3>
        </motion.div>
 
        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

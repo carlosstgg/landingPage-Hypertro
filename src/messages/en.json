@@ -1,0 +1,164 @@
+{
+  "Navbar": {
+    "features": "Features",
+    "ranks": "Ranks",
+    "waitlist": "Waitlist",
+    "join": "Join Now"
+  },
+  "Hero": {
+    "title_prefix": "The Evolution of",
+    "title_highlight": "your Training",
+    "subtitle": "Turn your discipline into power. Professional hypertrophy tracking fused with RPG mechanics. Your legacy begins today.",
+    "coming_soon": "Coming soon to",
+    "app_store": "App Store",
+    "google_play": "Google Play",
+    "screenshots": {
+      "next_session": "Next Session",
+      "profile": "Your Profile",
+      "log": "Log",
+      "completed": "Completed",
+      "legacy": "Your Legacy"
+    }
+  },
+  "Features": {
+    "title": "The Ultimate Gym Tracker",
+    "subtitle": "Featured Capabilities",
+    "items": {
+      "tracking": {
+        "title": "Routine Tracking",
+        "description": "Forget paper and notes. Log every rep, set, and rest with an interface designed for speed in the gym."
+      },
+      "ranks": {
+        "title": "Ranks and Levels",
+        "description": "Your sweat becomes XP. Unlock military ranks from Recruit to Legend."
+      },
+      "streak": {
+        "title": "Streak Widget",
+        "description": "Maintain discipline. Visualize your consistency and protect your daily streak."
+      },
+      "dark_mode": {
+        "title": "Absolute Dark Mode",
+        "description": "Designed for focus. Pure OLED backgrounds, perfect contrasts, and zero visual distractions."
+      }
+    }
+  },
+  "Gamification": {
+    "rpg_system": "RPG System",
+    "title": "Turn Pain",
+    "title_suffix": "into Prestige",
+    "description": "In HYPERTRO, every completed session grants you experience points (XP). Unlock medals, achieve fire streaks, and climb the military hierarchy. Do you have what it takes to reach the rank of General?",
+    "ranks": {
+      "recruit": "Recruit",
+      "veteran": "Veteran",
+      "legend": "Legend"
+    },
+    "unlock": "Achievement Unlocked",
+    "just_now": "Just now",
+    "achievement_title": "King of Hypertrophy",
+    "achievement_desc": "Reach 100 completed workouts.",
+    "weekly_goal": "Weekly Goal"
+  },
+  "Waitlist": {
+    "title": "Ready to leave your",
+    "title_highlight": "Legacy",
+    "title_suffix": "?",
+    "subtitle": "Join the waitlist today and get 1 month of HYPERTRO Pro free when we launch.",
+    "spots_left": "{count} spots left",
+    "full_title": "Promotion Full!",
+    "full_desc": "The 1000 Founder spots have already been taken. But don't worry! You can download the app when it's available.",
+    "placeholder": "Enter your email",
+    "join_button": "Join Now",
+    "loading": "Loading...",
+    "success_title": "You are a Founder!",
+    "success_desc": "Save your code to get 1 month free Premium + your exclusive badge:",
+    "copy_button": "Copy code",
+    "only_left": "Only",
+    "only_left_suffix": "of 1000 spots left!",
+    "error_connection": "Connection error. Please try again."
+  },
+  "Footer": {
+    "description": "The ultimate platform for athletes seeking to push their physical and mental limits through gamification.",
+    "product": "Product",
+    "legal": "Legal",
+    "join": "Join the Elite",
+    "newsletter_desc": "Receive training tips and app updates.",
+    "email_placeholder": "you@email.com",
+    "privacy": "Privacy Policy",
+    "terms": "Terms and Conditions",
+    "contact": "Contact",
+    "rights": "© 2026 HYPERTRO. All rights reserved."
+  },
+  "Privacy": {
+    "title": "Privacy Policy",
+    "last_updated": "Last updated: January 15, 2026",
+    "intro": "At HYPERTRO ('we', 'our'), we respect your privacy and are committed to protecting it by complying with this policy. This policy describes the types of information we may collect from you or that you may provide when you use the HYPERTRO mobile application.",
+    "sections": {
+      "collection": "1. Information Collection",
+      "collection_desc": "We collect various types of information from and about users of our application, including:",
+      "personal_info": "Personally Identifiable Information",
+      "personal_info_desc": "Name, email address, and profile photo (optional).",
+      "health_data": "Health and Fitness Data",
+      "health_data_desc": "Workout logs, weight, body measurements, and performance statistics.",
+      "tech_data": "Technical Data",
+      "tech_data_desc": "IP address, device type, operating system version, and application usage data.",
+      "usage": "2. Use of Information",
+      "usage_desc": "We use the information we collect to:",
+      "usage_items": [
+        "Provide, operate, and maintain our application.",
+        "Improve, personalize, and expand our application.",
+        "Understand and analyze how you use our application.",
+        "Develop new products, services, features, and functionality.",
+        "Communicate with you, either directly or through one of our partners, including for customer service."
+      ],
+      "security": "3. Data Security",
+      "security_desc": "The security of your data is important to us, but remember that no method of transmission over the Internet or method of electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your personal data, we cannot guarantee its absolute security.",
+      "rights": "4. User Rights (GDPR/CCPA)",
+      "rights_desc": "Depending on your location, you may have rights related to your personal data, including the right to access, correct, delete, or restrict the use of your personal data.",
+      "contact": "5. Contact",
+      "contact_desc": "If you have any questions about this Privacy Policy, you can contact us:",
+      "by_email": "By email:"
+    }
+  },
+  "Terms": {
+    "title": "Terms and Conditions",
+    "last_updated": "Last updated: January 15, 2026",
+    "intro": "Please read these terms and conditions carefully before using the HYPERTRO application.",
+    "Section1": {
+        "title": "1. Acceptance of Terms",
+        "content": "By accessing or using the Service, you agree to be bound by these Terms. If you disagree with any part of the terms, you may not access the Service."
+    },
+    "Section2": {
+        "title": "2. Medical Disclaimer",
+        "warning": "MEDICAL WARNING",
+        "content": "HYPERTRO is not a healthcare provider. The content of the application, such as workouts, plans, and analysis, is for informational and educational purposes only. Participation in any exercise or training program carries risks. Always consult a physician before starting this or any exercise program.",
+        "risk": "Use of the application is at your own risk."
+    },
+    "Section3": {
+        "title": "3. Accounts and Subscriptions",
+        "content1": "When you create an account with us, you guarantee that you are over 18 years old and that the information provided is accurate. You are responsible for safeguarding the password you use to access the Service.",
+        "content2": "Certain features (Premium) may be billed on a subscription basis. These will renew automatically unless canceled at least 24 hours in advance."
+    },
+    "Section4": {
+        "title": "4. Gamification and Virtual Assets",
+        "content": "\"Experience points\" (XP), \"levels\", \"ranks\", and \"medals\" obtained in the App are virtual, have no real-world monetary value, and cannot be transferred or redeemed for money."
+    },
+    "Section5": {
+        "title": "5. Intellectual Property",
+        "content": "The Service and its original content, features, and functionality are and will remain the exclusive property of HYPERTRO and its licensors. The Service is protected by copyright, trademark, and other laws."
+    },
+    "Section6": {
+        "title": "6. Termination",
+        "content": "We may terminate or suspend your account immediately, without prior notice or liability, for any reason, including without limitation if you breach the Terms."
+    },
+    "Section7": {
+        "title": "7. Changes",
+        "content": "We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a revision is material, we will try to provide at least 30 days' notice prior to any new terms taking effect."
+    }
+  },
+  "Contact": {
+    "title": "Contact and Support",
+    "subtitle": "Do you have any questions or problems? We are here to help you.",
+    "card_title": "Send us an email",
+    "card_desc": "Our team will respond to you as soon as possible."
+  }
+}

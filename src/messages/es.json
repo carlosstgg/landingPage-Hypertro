@@ -1,0 +1,164 @@
+{
+  "Navbar": {
+    "features": "Features",
+    "ranks": "Rangos",
+    "waitlist": "Lista de Espera",
+    "join": "Unirse Ahora"
+  },
+  "Hero": {
+    "title_prefix": "La Evolución de",
+    "title_highlight": "tu Entrenamiento",
+    "subtitle": "Convierte tu disciplina en poder. Seguimiento profesional de hipertrofia fusionado con mecánicas RPG. Tu legado comienza hoy.",
+    "coming_soon": "Próximamente en",
+    "app_store": "App Store",
+    "google_play": "Google Play",
+    "screenshots": {
+      "next_session": "Próxima Sesión",
+      "profile": "Tu Perfil",
+      "log": "Registro",
+      "completed": "Completado",
+      "legacy": "Tu Legado"
+    }
+  },
+  "Features": {
+    "title": "El Gym Tracker Definitivo",
+    "subtitle": "Funcionalidades Destacadas",
+    "items": {
+      "tracking": {
+        "title": "Rastreo de Rutinas",
+        "description": "Olvídate del papel y las notas. Registra cada repetición, serie y descanso con una interfaz diseñada para la velocidad en el gimnasio."
+      },
+      "ranks": {
+        "title": "Rangos y Niveles",
+        "description": "Tu sudor se convierte en XP. Desbloquea rangos militares desde Recluta hasta Leyenda."
+      },
+      "streak": {
+        "title": "Widget de Racha",
+        "description": "Mantén la disciplina. Visualiza tu consistencia y protege tu racha diaria."
+      },
+      "dark_mode": {
+        "title": "Modo Oscuro Absoluto",
+        "description": "Diseñado para el enfoque. Fondos OLED puros, contrastes perfectos y cero distracciones visuales."
+      }
+    }
+  },
+  "Gamification": {
+    "rpg_system": "RPG System",
+    "title": "Convierte el Dolor",
+    "title_suffix": "en Prestigio",
+    "description": "En HYPERTRO, cada sesión completa te otorga puntos de experiencia (XP). Desbloquea medallas, consigue rachas de fuego y asciende en la jerarquía militar. ¿Tienes lo necesario para alcanzar el rango de General?",
+    "ranks": {
+      "recruit": "Recluta",
+      "veteran": "Veterano",
+      "legend": "Leyenda"
+    },
+    "unlock": "Logro Desbloqueado",
+    "just_now": "Ahora mismo",
+    "achievement_title": "Rey de la Hipertrofia",
+    "achievement_desc": "Alcanza 100 entrenamientos completados.",
+    "weekly_goal": "Objetivo Semanal"
+  },
+  "Waitlist": {
+    "title": "¿Listo para dejar tu",
+    "title_highlight": "Legado",
+    "title_suffix": "?",
+    "subtitle": "Únete a la lista de espera hoy y recibe 1 mes de HYPERTRO Pro gratis cuando lancemos.",
+    "spots_left": "{count} plazas disponibles",
+    "full_title": "¡Promoción Agotada!",
+    "full_desc": "Las 1000 plazas de Fundador ya han sido ocupadas. ¡Pero no te preocupes! Puedes descargar la app cuando esté disponible.",
+    "placeholder": "Introduce tu correo",
+    "join_button": "Unirse Ahora",
+    "loading": "Cargando...",
+    "success_title": "¡Eres un Fundador!",
+    "success_desc": "Guarda tu código para obtener 1 mes gratis de Premium + tu badge exclusivo:",
+    "copy_button": "Copiar código",
+    "only_left": "¡Solo quedan",
+    "only_left_suffix": "de 1000 plazas!",
+    "error_connection": "Error de conexión. Inténtalo de nuevo."
+  },
+  "Footer": {
+    "description": "La plataforma definitiva para atletas que buscan superar sus límites fisicos y mentales a través de la gamificación.",
+    "product": "Producto",
+    "legal": "Legal",
+    "join": "Únete a la Élite",
+    "newsletter_desc": "Recibe consejos de entrenamiento y actualizaciones de la app.",
+    "email_placeholder": "tu@email.com",
+    "privacy": "Política de Privacidad",
+    "terms": "Términos y Condiciones",
+    "contact": "Contacto",
+    "rights": "© 2026 HYPERTRO. Todos los derechos reservados."
+  },
+  "Privacy": {
+    "title": "Política de Privacidad",
+    "last_updated": "Última actualización: 15 de Enero de 2026",
+    "intro": "En HYPERTRO ('nosotros', 'nuestro'), respetamos su privacidad y estamos comprometidos a protegerla mediante el cumplimiento de esta política. Esta política describe los tipos de información que podemos recopilar de usted o que usted puede proporcionar cuando utiliza la aplicación móvil HYPERTRO.",
+    "sections": {
+      "collection": "1. Recopilación de Información",
+      "collection_desc": "Recopilamos varios tipos de información de y sobre los usuarios de nuestra aplicación, incluyendo:",
+      "personal_info": "Información de Identificación Personal",
+      "personal_info_desc": "Nombre, dirección de correo electrónico, y foto de perfil (opcional).",
+      "health_data": "Datos de Salud y Fitness",
+      "health_data_desc": "Registros de entrenamiento, peso, medidas corporales y estadísticas de rendimiento.",
+      "tech_data": "Datos Técnicos",
+      "tech_data_desc": "Dirección IP, tipo de dispositivo, versión del sistema operativo y datos de uso de la aplicación.",
+      "usage": "2. Uso de la Información",
+      "usage_desc": "Utilizamos la información que recopilamos para:",
+      "usage_items": [
+        "Proporcionar, operar y mantener nuestra aplicación.",
+        "Mejorar, personalizar y expandir nuestra aplicación.",
+        "Comprender y analizar cómo utiliza nuestra aplicación.",
+        "Desarrollar nuevos productos, servicios, características y funcionalidades.",
+        "Comunicarnos con usted, ya sea directamente o a través de uno de nuestros socios, incluso para el servicio al cliente."
+      ],
+      "security": "3. Seguridad de los Datos",
+      "security_desc": "La seguridad de sus datos es importante para nosotros, pero recuerde que ningún método de transmisión a través de Internet o método de almacenamiento electrónico es 100% seguro. Si bien nos esforzamos por utilizar medios comercialmente aceptables para proteger sus datos personales, no podemos garantizar su seguridad absoluta.",
+      "rights": "4. Derechos del Usuario (GDPR/CCPA)",
+      "rights_desc": "Dependiendo de su ubicación, puede tener derechos relacionados con sus datos personales, incluyendo el derecho a acceder, corregir, eliminar o restringir el uso de sus datos personales.",
+      "contact": "5. Contacto",
+      "contact_desc": "Si tiene alguna pregunta sobre esta Política de Privacidad, puede contactarnos:",
+      "by_email": "Por email:"
+    }
+  },
+  "Terms": {
+    "title": "Términos y Condiciones",
+    "last_updated": "Última actualización: 15 de Enero de 2026",
+    "intro": "Por favor, lea estos términos y condiciones cuidadosamente antes de usar la aplicación HYPERTRO.",
+    "Section1": {
+        "title": "1. Aceptación de los Términos",
+        "content": "Al acceder o utilizar el Servicio, usted acepta estar sujeto a estos Términos. Si no está de acuerdo con alguna parte de los términos, no podrá acceder al Servicio."
+    },
+    "Section2": {
+        "title": "2. Descargo de Responsabilidad Médica",
+        "warning": "ADVERTENCIA MÉDICA",
+        "content": "HYPERTRO no es un proveedor de atención médica. El contenido de la aplicación, como entrenamientos, planes y análisis, es solo para fines informativos y educativos. La participación en cualquier ejercicio o programa de entrenamiento conlleva riesgos. Consulte siempre a un médico antes de comenzar este o cualquier programa de ejercicios.",
+        "risk": "El uso de la aplicación es bajo su propio riesgo."
+    },
+    "Section3": {
+        "title": "3. Cuentas y Suscripciones",
+        "content1": "Cuando crea una cuenta con nosotros, garantiza que es mayor de 18 años y que la información proporcionada es precisa. Usted es responsable de salvaguardar la contraseña que utiliza para acceder al Servicio.",
+        "content2": "Ciertas funciones (Premium) pueden facturarse mediante suscripción. Estas se renovarán automáticamente a menos que se cancelen con al menos 24 horas de antelación."
+    },
+    "Section4": {
+        "title": "4. Gamificación y Activos Virtuales",
+        "content": "Los \"puntos de experiencia\" (XP), \"niveles\", \"rangos\" y \"medallas\" obtenidos en la App son virtuales, no tienen valor monetario en el mundo real y no pueden ser transferidos ni canjeados por dinero."
+    },
+    "Section5": {
+        "title": "5. Propiedad Intelectual",
+        "content": "El Servicio y su contenido original, características y funcionalidad son y seguirán siendo propiedad exclusiva de HYPERTRO y sus licenciantes. El Servicio está protegido por derechos de autor, marcas comerciales y otras leyes."
+    },
+    "Section6": {
+        "title": "6. Terminación",
+        "content": "Podemos cancelar o suspender su cuenta inmediatamente, sin previo aviso ni responsabilidad, por cualquier motivo, incluido, entre otros, si usted incumple los Términos."
+    },
+    "Section7": {
+        "title": "7. Cambios",
+        "content": "Nos reservamos el derecho, a nuestra sola discreción, de modificar o reemplazar estos Términos en cualquier momento. Si una revisión es material, intentaremos proporcionar un aviso de al menos 30 días antes de que entren en vigor los nuevos términos."
+    }
+  },
+  "Contact": {
+    "title": "Contacto y Soporte",
+    "subtitle": "¿Tienes alguna duda o problema? Estamos aquí para ayudarte.",
+    "card_title": "Envíanos un correo",
+    "card_desc": "Nuestro equipo te responderá lo antes posible."
+  }
+}
