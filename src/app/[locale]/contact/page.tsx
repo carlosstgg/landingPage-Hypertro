@@ -1,3 +1,4 @@
+'use client';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Mail } from "lucide-react";
