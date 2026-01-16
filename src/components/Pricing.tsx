@@ -39,16 +39,16 @@ export default function Pricing() {
   const renderCell = (value: boolean | { type: string, text: string }) => {
     if (typeof value === 'boolean') {
       return value ? (
-        <div className="flex justify-center"><div className="bg-emerald-500/20 p-1 rounded-md"><Check className="w-5 h-5 text-emerald-500" /></div></div>
+        <div className="flex justify-center"><div className="bg-emerald-500/20 p-1 rounded-md"><Check className="w-4 h-4 md:w-5 md:h-5 text-emerald-500" /></div></div>
       ) : (
-        <div className="flex justify-center"><X className="w-6 h-6 text-red-500/50" /></div>
+        <div className="flex justify-center"><X className="w-5 h-5 md:w-6 md:h-6 text-red-500/50" /></div>
       );
     }
     
     if (value.type === 'warning') {
       return (
-        <div className="flex items-center justify-center gap-2 text-amber-500 text-sm font-medium">
-          <AlertTriangle className="w-4 h-4" />
+        <div className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-amber-500 text-xs md:text-sm font-medium text-center leading-tight">
+          <AlertTriangle className="w-3 h-3 md:w-4 md:h-4 shrink-0" />
           <span>{value.text}</span>
         </div>
       );
@@ -56,8 +56,8 @@ export default function Pricing() {
     
     if (value.type === 'check') {
       return (
-        <div className="flex items-center justify-center gap-2 text-emerald-500 text-sm font-medium">
-          <div className="bg-emerald-500/20 p-1 rounded-md"><Check className="w-4 h-4" /></div>
+        <div className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-emerald-500 text-xs md:text-sm font-medium text-center leading-tight">
+          <div className="bg-emerald-500/20 p-0.5 md:p-1 rounded-md shrink-0"><Check className="w-3 h-3 md:w-4 md:h-4" /></div>
           <span>{value.text}</span>
         </div>
       );
@@ -65,7 +65,7 @@ export default function Pricing() {
   };
 
   return (
-    <section id="pricing" className="py-24 px-6 max-w-5xl mx-auto">
+    <section id="pricing" className="py-24 px-4 md:px-6 max-w-5xl mx-auto">
       <motion.div 
          initial={{ opacity: 0, y: 20 }} 
          whileInView={{ opacity: 1, y: 0 }}
@@ -81,37 +81,39 @@ export default function Pricing() {
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[80px] rounded-full pointer-events-none"></div>
 
             {/* Header */}
-            <div className="grid grid-cols-6 border-b border-white/10 bg-white/5 font-teko text-xl md:text-2xl tracking-wide">
-              <div className="col-span-3 md:col-span-3 p-4 md:p-6 text-white text-left pl-8"></div>
-              <div className="col-span-1.5 md:col-span-1.5 p-4 md:p-6 text-center text-white">FREE</div>
-              <div className="col-span-1.5 md:col-span-1.5 p-4 md:p-6 text-center text-white bg-primary/10 border-l border-white/5 relative">
-                PRO
-                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
-              </div>
-            </div>
-
-            {/* Price Row */}
-            <div className="grid grid-cols-6 border-b border-white/10 font-inter text-sm md:text-base">
-              <div className="col-span-3 md:col-span-3 p-4 md:p-6 text-gray-300 font-semibold pl-8">Precio</div>
-              <div className="col-span-1.5 md:col-span-1.5 p-4 md:p-6 text-center text-gray-300">Gratis</div>
-              <div className="col-span-1.5 md:col-span-1.5 p-4 md:p-6 text-center text-primary font-bold bg-primary/5 border-l border-white/5 text-lg">$2.50/mes</div>
-            </div>
-
-            {/* Features */}
-            <div className="divide-y divide-white/5">
-              {features.map((feature, i) => (
-                <div key={i} className="grid grid-cols-6 hover:bg-white/[0.02] transition-colors font-inter text-sm md:text-sm">
-                  <div className="col-span-3 md:col-span-3 p-4 md:p-4 text-gray-400 pl-8 flex items-center">
-                    {feature.name}
-                  </div>
-                  <div className="col-span-1.5 md:col-span-1.5 p-4 md:p-4 flex items-center justify-center">
-                    {renderCell(feature.free)}
-                  </div>
-                  <div className="col-span-1.5 md:col-span-1.5 p-4 md:p-4 flex items-center justify-center bg-primary/[0.02] border-l border-white/5">
-                    {renderCell(feature.pro)}
+            <div>
+                <div className="grid grid-cols-12 border-b border-white/10 bg-white/5 font-teko text-lg md:text-2xl tracking-wide">
+                  <div className="col-span-6 py-4 px-2 md:p-6 text-white text-left pl-4 md:pl-8"></div>
+                  <div className="col-span-3 py-4 px-2 md:p-6 text-center text-white flex items-center justify-center">FREE</div>
+                  <div className="col-span-3 py-4 px-2 md:p-6 text-center text-white bg-primary/10 border-l border-white/5 relative flex items-center justify-center">
+                    PRO
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
                   </div>
                 </div>
-              ))}
+
+                {/* Price Row */}
+                <div className="grid grid-cols-12 border-b border-white/10 font-inter text-xs md:text-base">
+                  <div className="col-span-6 py-4 px-2 md:p-6 text-gray-300 font-semibold pl-4 md:pl-8 flex items-center">Precio</div>
+                  <div className="col-span-3 py-4 px-2 md:p-6 text-center text-gray-300 flex items-center justify-center">Gratis</div>
+                  <div className="col-span-3 py-4 px-2 md:p-6 text-center text-primary font-bold bg-primary/5 border-l border-white/5 text-sm md:text-lg flex items-center justify-center">$2.50/m</div>
+                </div>
+
+                {/* Features */}
+                <div className="divide-y divide-white/5">
+                  {features.map((feature, i) => (
+                    <div key={i} className="grid grid-cols-12 hover:bg-white/[0.02] transition-colors font-inter text-xs md:text-sm">
+                      <div className="col-span-6 py-4 px-2 md:p-4 text-gray-400 pl-4 md:pl-8 flex items-center">
+                        {feature.name}
+                      </div>
+                      <div className="col-span-3 py-4 px-1 md:p-4 flex items-center justify-center">
+                        {renderCell(feature.free)}
+                      </div>
+                      <div className="col-span-3 py-4 px-1 md:p-4 flex items-center justify-center bg-primary/[0.02] border-l border-white/5">
+                        {renderCell(feature.pro)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
             </div>
          </div>
 
