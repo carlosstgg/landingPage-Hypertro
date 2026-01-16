@@ -2,8 +2,8 @@
   "Navbar": {
     "features": "Features",
     "ranks": "Rangos",
-    "waitlist": "Lista de Espera",
-    "join": "Unirse Ahora"
+    "pricing": "Planes",
+    "download": "Descargar"
   },
   "Hero": {
     "title_prefix": "La Evolución de",
@@ -24,21 +24,29 @@
     "title": "El Gym Tracker Definitivo",
     "subtitle": "Funcionalidades Destacadas",
     "items": {
-      "tracking": {
-        "title": "Rastreo de Rutinas",
-        "description": "Olvídate del papel y las notas. Registra cada repetición, serie y descanso con una interfaz diseñada para la velocidad en el gimnasio."
+      "smart_trainer": {
+        "title": "Tu Entrenador Inteligente",
+        "description": "¿No sabes qué entrenar hoy? Deja que Hypertro genere automáticamente una rutina personalizada basada en tus objetivos y nivel, o diseña la tuya propia con total libertad."
       },
-      "ranks": {
-        "title": "Rangos y Niveles",
-        "description": "Tu sudor se convierte en XP. Desbloquea rangos militares desde Recluta hasta Leyenda."
+      "offline_mode": {
+        "title": "Modo 100% Offline",
+        "description": "Olvídate de la mala señal del gimnasio. Hypertro funciona perfectamente sin internet, guardando cada repetición y sincronizando tus datos cuando vuelvas a estar conectado."
       },
-      "streak": {
-        "title": "Widget de Racha",
-        "description": "Mantén la disciplina. Visualiza tu consistencia y protege tu racha diaria."
+      "advanced_stats": {
+        "title": "Estadísticas Avanzadas",
+        "description": "No es solo sudor, son datos. Mira cómo crecen tus levantamientos con gráficos claros y detallados que demuestran tu progreso real semana a semana."
       },
-      "dark_mode": {
-        "title": "Modo Oscuro Absoluto",
-        "description": "Diseñado para el enfoque. Fondos OLED puros, contrastes perfectos y cero distracciones visuales."
+      "gamification": {
+        "title": "Desbloquea Logros",
+        "description": "Mantén la motivación al máximo ganando medallas y logros por tu constancia, récords personales y metas alcanzadas. ¡Haz que entrenar sea un juego!"
+      },
+      "share_style": {
+        "title": "Comparte con Estilo",
+        "description": "Genera imágenes increíbles de tus rutinas o tus nuevos récords personales (PRs) listas para subir a Instagram o compartir con amigos con un solo toque."
+      },
+      "timers": {
+        "title": "Temporizadores Integrados",
+        "description": "Descansa lo justo y necesario. Nuestros temporizadores automáticos con avisos de sonido y vibración te mantienen concentrado en tu serie."
       }
     }
   },
@@ -77,12 +85,11 @@
     "error_connection": "Error de conexión. Inténtalo de nuevo."
   },
   "Footer": {
-    "description": "La plataforma definitiva para atletas que buscan superar sus límites fisicos y mentales a través de la gamificación.",
+    "description": "La plataforma definitiva para atletas que buscan superar sus límites físicos y mentales a través de la gamificación.",
     "product": "Producto",
     "legal": "Legal",
-    "join": "Únete a la Élite",
-    "newsletter_desc": "Recibe consejos de entrenamiento y actualizaciones de la app.",
-    "email_placeholder": "tu@email.com",
+    "coming_soon_title": "Próximamente",
+    "coming_soon_desc": "Estamos ultimando los detalles. ¡Muy pronto podrás descargar la app!",
     "privacy": "Política de Privacidad",
     "terms": "Términos y Condiciones",
     "contact": "Contacto",

@@ -2,8 +2,8 @@
   "Navbar": {
     "features": "Features",
     "ranks": "Ranks",
-    "waitlist": "Waitlist",
-    "join": "Join Now"
+    "pricing": "Plans",
+    "download": "Download"
   },
   "Hero": {
     "title_prefix": "The Evolution of",
@@ -24,21 +24,29 @@
     "title": "The Ultimate Gym Tracker",
     "subtitle": "Featured Capabilities",
     "items": {
-      "tracking": {
-        "title": "Routine Tracking",
-        "description": "Forget paper and notes. Log every rep, set, and rest with an interface designed for speed in the gym."
+      "smart_trainer": {
+        "title": "Your Smart Trainer",
+        "description": "Not sure what to train today? Let Hypertro automatically generate a personalized routine based on your goals and level, or design your own with complete freedom."
       },
-      "ranks": {
-        "title": "Ranks and Levels",
-        "description": "Your sweat becomes XP. Unlock military ranks from Recruit to Legend."
+      "offline_mode": {
+        "title": "100% Offline Mode",
+        "description": "Forget about poor gym signal. Hypertro works perfectly without internet, saving every rep and syncing your data when you're back online."
       },
-      "streak": {
-        "title": "Streak Widget",
-        "description": "Maintain discipline. Visualize your consistency and protect your daily streak."
+      "advanced_stats": {
+        "title": "Advanced Statistics",
+        "description": "It's not just sweat, it's data. Watch your lifts grow with clear, detailed charts that show your real progress week by week."
       },
-      "dark_mode": {
-        "title": "Absolute Dark Mode",
-        "description": "Designed for focus. Pure OLED backgrounds, perfect contrasts, and zero visual distractions."
+      "gamification": {
+        "title": "Unlock Achievements",
+        "description": "Keep motivation at its peak by earning medals and achievements for your consistency, personal records, and goals achieved. Make training a game!"
+      },
+      "share_style": {
+        "title": "Share in Style",
+        "description": "Generate stunning images of your routines or new personal records (PRs) ready to upload to Instagram or share with friends with a single tap."
+      },
+      "timers": {
+        "title": "Built-in Timers",
+        "description": "Rest just the right amount. Our automatic timers with sound and vibration alerts keep you focused on your set."
       }
     }
   },
@@ -80,9 +88,8 @@
     "description": "The ultimate platform for athletes seeking to push their physical and mental limits through gamification.",
     "product": "Product",
     "legal": "Legal",
-    "join": "Join the Elite",
-    "newsletter_desc": "Receive training tips and app updates.",
-    "email_placeholder": "you@email.com",
+    "coming_soon_title": "Coming Soon",
+    "coming_soon_desc": "We're putting the final touches. You'll be able to download the app very soon!",
     "privacy": "Privacy Policy",
     "terms": "Terms and Conditions",
     "contact": "Contact",

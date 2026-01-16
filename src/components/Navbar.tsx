@@ -32,7 +32,7 @@ export default function Navbar() {
       <div className="hidden md:flex items-center gap-8 font-inter text-sm tracking-wide text-gray-300">
         <Link href="#features" className="hover:text-primary transition-colors uppercase">{t('features')}</Link>
         <Link href="#gamification" className="hover:text-primary transition-colors uppercase">{t('ranks')}</Link>
-        <Link href="#waitlist" className="hover:text-primary transition-colors uppercase">{t('waitlist')}</Link>
+        <Link href="#pricing" className="hover:text-primary transition-colors uppercase">{t('pricing')}</Link>
         
         {/* Language Switcher */}
         <div className="flex gap-2 ml-4 border-l border-white/10 pl-4">
@@ -68,12 +68,6 @@ export default function Navbar() {
                 EN
             </button>
           </div>
-
-          <Link href="#waitlist">
-            <button className="bg-primary hover:bg-primary/90 text-black font-bold font-teko text-lg px-6 py-1 rounded-sm transition-all transform hover:skew-x-[-10deg]">
-              {t('join').toUpperCase()}
-            </button>
-          </Link>
       </div>
     </motion.nav>
   );

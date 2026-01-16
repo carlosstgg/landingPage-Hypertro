@@ -1,6 +1,6 @@
 'use client';
 import { motion } from "framer-motion";
-import { Dumbbell, Trophy, Zap, Moon } from "lucide-react";
+import { Sparkles, WifiOff, BarChart3, Trophy, Share2, Timer } from "lucide-react";
 import { useTranslations } from 'next-intl';
 
 export default function Features() {
@@ -8,27 +8,39 @@ export default function Features() {
 
   const features = [
     {
-      title: t('items.tracking.title'),
-      description: t('items.tracking.description'),
-      icon: <Dumbbell size={32} className="text-primary" />,
+      title: t('items.smart_trainer.title'),
+      description: t('items.smart_trainer.description'),
+      icon: <Sparkles size={32} className="text-primary" />,
       colSpan: "col-span-1 md:col-span-2",
     },
     {
-      title: t('items.ranks.title'),
-      description: t('items.ranks.description'),
-      icon: <Trophy size={32} className="text-secondary" />,
+      title: t('items.offline_mode.title'),
+      description: t('items.offline_mode.description'),
+      icon: <WifiOff size={32} className="text-cyan-400" />,
       colSpan: "col-span-1",
     },
     {
-      title: t('items.streak.title'),
-      description: t('items.streak.description'),
-      icon: <Zap size={32} className="text-orange-500" />,
+      title: t('items.advanced_stats.title'),
+      description: t('items.advanced_stats.description'),
+      icon: <BarChart3 size={32} className="text-violet-400" />,
       colSpan: "col-span-1",
     },
     {
-      title: t('items.dark_mode.title'),
-      description: t('items.dark_mode.description'),
-      icon: <Moon size={32} className="text-gray-400" />,
+      title: t('items.gamification.title'),
+      description: t('items.gamification.description'),
+      icon: <Trophy size={32} className="text-amber-400" />,
+      colSpan: "col-span-1 md:col-span-2",
+    },
+    {
+      title: t('items.share_style.title'),
+      description: t('items.share_style.description'),
+      icon: <Share2 size={32} className="text-pink-400" />,
+      colSpan: "col-span-1",
+    },
+    {
+      title: t('items.timers.title'),
+      description: t('items.timers.description'),
+      icon: <Timer size={32} className="text-orange-400" />,
       colSpan: "col-span-1 md:col-span-2",
     },
   ];

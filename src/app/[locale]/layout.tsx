@@ -57,6 +57,7 @@ export default async function RootLayout({
     <html lang={locale}>
       <body
         className={`${inter.variable} ${teko.variable} bg-background text-foreground antialiased selection:bg-primary selection:text-black`}
+        suppressHydrationWarning
       >
         <NextIntlClientProvider messages={messages}>
           {children}
