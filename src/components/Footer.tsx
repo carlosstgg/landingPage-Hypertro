@@ -21,7 +21,7 @@ export default function Footer() {
                     {t('description')}
                 </p>
                 <div className="flex gap-4">
-                    <a href="https://www.instagram.com/hypertro.app/" className="hover:text-primary transition-colors"><Instagram size={20} /></a>
+                    <a href="https://www.instagram.com/hypertroapp/" className="hover:text-primary transition-colors"><Instagram size={20} /></a>
                 </div>
             </div>
 
